@@ -9,3 +9,47 @@
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }
+
+.profile-pressable {
+  transition:
+    transform 160ms cubic-bezier(0.22, 1, 0.36, 1),
+    background-color 160ms cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 160ms cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 160ms cubic-bezier(0.22, 1, 0.36, 1);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.profile-pressable:active {
+  transform: scale(0.985);
+}
+
+.vocab-stack-pressable {
+  transition:
+    transform 180ms cubic-bezier(0.22, 1, 0.36, 1),
+    filter 180ms cubic-bezier(0.22, 1, 0.36, 1);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.vocab-stack-pressable:active {
+  transform: translateY(1px) scale(0.99);
+  filter: saturate(0.96);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .profile-pressable {
+    transition-duration: 0.01ms;
+  }
+
+  .profile-pressable:active {
+    transform: none;
+  }
+
+  .vocab-stack-pressable {
+    transition-duration: 0.01ms;
+  }
+
+  .vocab-stack-pressable:active {
+    transform: none;
+    filter: none;
+  }
+}

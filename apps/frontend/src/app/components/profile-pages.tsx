@@ -1,9 +1,32 @@
-import { useState } from 'react';
-import { ChevronRight, Download, RefreshCw } from 'lucide-react';
+import { useRef, useState, type RefObject } from 'react';
+import gsap from 'gsap';
+import { useGSAP } from '@gsap/react';
+import {
+  BarChart3,
+  BookOpen,
+  Bot,
+  CheckCircle2,
+  ChevronRight,
+  CircleHelp,
+  Crown,
+  Download,
+  FileText,
+  Flame,
+  FolderKanban,
+  Newspaper,
+  PencilLine,
+  RefreshCw,
+  RotateCcw,
+  Settings,
+  Upload,
+  type LucideIcon,
+} from 'lucide-react';
 import {
   IOSStatusBar, BackNav, BottomNav,
   NavigateFn,
 } from './shared';
+
+gsap.registerPlugin(useGSAP);
 
 interface Props {
   navigate: NavigateFn;
@@ -11,11 +34,67 @@ interface Props {
   onTabChange: (tab: 'today' | 'wrongbank' | 'review' | 'profile') => void;
 }
 
+type IconTone = 'blue' | 'gold' | 'green' | 'red' | 'slate';
+
+const iconTones: Record<IconTone, { bg: string; color: string; ring: string }> = {
+  blue: { bg: '#eef4fb', color: '#24527d', ring: 'rgba(36,82,125,0.08)' },
+  gold: { bg: '#fbf4e2', color: '#96711a', ring: 'rgba(150,113,26,0.10)' },
+  green: { bg: '#edf7f1', color: '#2e7446', ring: 'rgba(46,116,70,0.09)' },
+  red: { bg: '#fff0ee', color: '#ba4c3a', ring: 'rgba(186,76,58,0.08)' },
+  slate: { bg: '#f0f4f8', color: '#52677e', ring: 'rgba(82,103,126,0.08)' },
+};
+
+function IconTile({ Icon, tone = 'blue' }: { Icon: LucideIcon; tone?: IconTone }) {
+  const colors = iconTones[tone];
+
+  return (
+    <span
+      className="flex h-[34px] w-[34px] shrink-0 items-center justify-center rounded-[10px]"
+      style={{
+        backgroundColor: colors.bg,
+        boxShadow: `inset 0 0 0 0.833px ${colors.ring}`,
+      }}
+    >
+      <Icon size={18} strokeWidth={1.85} color={colors.color} />
+    </span>
+  );
+}
+
+function useSubtleEntrance(scope: RefObject<HTMLElement>) {
+  useGSAP(() => {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    gsap.from('.profile-motion', {
+      autoAlpha: 0,
+      y: 14,
+      duration: 0.42,
+      stagger: 0.045,
+      ease: 'power3.out',
+      clearProps: 'transform,opacity,visibility',
+    });
+  }, { scope });
+}
+
 // ─── Page 12: Profile Home ────────────────────────────────────────────────────
 
 export function ProfileHomePage({ navigate, goBack, onTabChange }: Props) {
+  const scope = useRef<HTMLDivElement>(null);
+  useSubtleEntrance(scope);
+
+  const functionEntries = [
+    { Icon: Crown, label: '会员权益', sublabel: '年度会员 · 到期2027.06', action: () => navigate('membership'), tone: 'gold' as const },
+    { Icon: Upload, label: '导出记录', sublabel: '共 12 份', action: () => navigate('export-history'), tone: 'blue' as const },
+    { Icon: FolderKanban, label: '资料夹管理', sublabel: '6 个文件夹', action: undefined, tone: 'slate' as const },
+    { Icon: BarChart3, label: '学习数据', sublabel: '查看详细分析', action: undefined, tone: 'green' as const },
+  ];
+
+  const settingEntries = [
+    { Icon: Settings, label: '设置', sublabel: '通知 · 隐私 · 字体大小', tone: 'slate' as const },
+    { Icon: CircleHelp, label: '帮助与反馈', sublabel: '常见问题', tone: 'red' as const },
+  ];
+
   return (
-    <div className="flex flex-col h-full bg-[#f2f4f8] overflow-hidden">
+    <div ref={scope} className="flex flex-col h-full bg-[#f2f4f8] overflow-hidden">
       <IOSStatusBar />
 
       {/* Header */}
@@ -25,7 +104,7 @@ export function ProfileHomePage({ navigate, goBack, onTabChange }: Props) {
 
       <div className="flex-1 overflow-y-auto px-[16px] pb-[8px]">
         {/* User card */}
-        <div className="bg-[#1e3a5f] rounded-[16px] p-[20px] mb-[14px]"
+        <div className="profile-motion bg-[#1e3a5f] rounded-[16px] p-[20px] mb-[14px]"
           style={{ boxShadow: '0 4px 16px rgba(30,58,95,0.25)' }}>
           <div className="flex items-center gap-[14px]">
             <div className="w-[52px] h-[52px] rounded-full bg-[rgba(255,255,255,0.2)] flex items-center justify-center flex-shrink-0">
@@ -56,7 +135,7 @@ export function ProfileHomePage({ navigate, goBack, onTabChange }: Props) {
         </div>
 
         {/* Stats row */}
-        <div className="grid grid-cols-4 gap-[8px] mb-[14px]">
+        <div className="profile-motion grid grid-cols-4 gap-[8px] mb-[14px]">
           {[
             { label: '连续学习', value: '14天', color: '#2b5fbf' },
             { label: '累计错题', value: '154', color: '#c84b2f' },
@@ -71,22 +150,17 @@ export function ProfileHomePage({ navigate, goBack, onTabChange }: Props) {
         </div>
 
         {/* Function entries */}
-        <div className="bg-white rounded-[14px] mb-[12px] overflow-hidden" style={{ boxShadow: '0 1px 4px rgba(0,0,0,0.06)' }}>
-          {[
-            { icon: '👑', label: '会员权益', sublabel: '年度会员 · 到期2027.06', action: () => navigate('membership'), accent: '#c09a30' },
-            { icon: '📤', label: '导出记录', sublabel: '共 12 份', action: () => navigate('export-history') },
-            { icon: '📁', label: '资料夹管理', sublabel: '6 个文件夹', action: undefined },
-            { icon: '📊', label: '学习数据', sublabel: '查看详细分析', action: undefined },
-          ].map(({ icon, label, sublabel, action, accent }, i) => (
+        <div className="profile-motion bg-white rounded-[14px] mb-[12px] overflow-hidden" style={{ boxShadow: '0 1px 4px rgba(0,0,0,0.06)' }}>
+          {functionEntries.map(({ Icon, label, sublabel, action, tone }, i) => (
             <button
               key={label}
               onClick={action}
-              className={`w-full flex items-center justify-between px-[16px] py-[14px] active:bg-[#f8f8f8] text-left ${
+              className={`profile-pressable w-full flex items-center justify-between px-[16px] py-[13px] active:bg-[#f8f8f8] text-left ${
                 i < 3 ? 'border-b border-[#f5f5f5]' : ''
               }`}
             >
               <div className="flex items-center gap-[12px]">
-                <span className="text-[20px] w-[28px] text-center">{icon}</span>
+                <IconTile Icon={Icon} tone={tone} />
                 <div>
                   <p className="font-['Noto_Sans_SC:Medium',sans-serif] font-medium text-[15px] text-[#1b2d4f]">{label}</p>
                   {sublabel && (
@@ -100,17 +174,14 @@ export function ProfileHomePage({ navigate, goBack, onTabChange }: Props) {
         </div>
 
         {/* Settings */}
-        <div className="bg-white rounded-[14px] mb-[12px] overflow-hidden" style={{ boxShadow: '0 1px 4px rgba(0,0,0,0.06)' }}>
-          {[
-            { icon: '⚙️', label: '设置', sublabel: '通知 · 隐私 · 字体大小' },
-            { icon: '❓', label: '帮助与反馈', sublabel: '常见问题' },
-          ].map(({ icon, label, sublabel }, i) => (
+        <div className="profile-motion bg-white rounded-[14px] mb-[12px] overflow-hidden" style={{ boxShadow: '0 1px 4px rgba(0,0,0,0.06)' }}>
+          {settingEntries.map(({ Icon, label, sublabel, tone }, i) => (
             <button
               key={label}
-              className={`w-full flex items-center justify-between px-[16px] py-[14px] active:bg-[#f8f8f8] text-left ${i < 1 ? 'border-b border-[#f5f5f5]' : ''}`}
+              className={`profile-pressable w-full flex items-center justify-between px-[16px] py-[13px] active:bg-[#f8f8f8] text-left ${i < 1 ? 'border-b border-[#f5f5f5]' : ''}`}
             >
               <div className="flex items-center gap-[12px]">
-                <span className="text-[20px] w-[28px] text-center">{icon}</span>
+                <IconTile Icon={Icon} tone={tone} />
                 <div>
                   <p className="font-['Noto_Sans_SC:Medium',sans-serif] font-medium text-[15px] text-[#1b2d4f]">{label}</p>
                   {sublabel && (
@@ -132,7 +203,9 @@ export function ProfileHomePage({ navigate, goBack, onTabChange }: Props) {
 // ─── Page 13: Membership ──────────────────────────────────────────────────────
 
 export function MembershipPage({ navigate, goBack, onTabChange }: Props) {
+  const scope = useRef<HTMLDivElement>(null);
   const [selectedPlan, setSelectedPlan] = useState<'month' | 'quarter' | 'year'>('year');
+  useSubtleEntrance(scope);
 
   const plans = [
     { id: 'month' as const, label: '月度会员', price: '68', unit: '元/月', save: null },
@@ -141,26 +214,26 @@ export function MembershipPage({ navigate, goBack, onTabChange }: Props) {
   ];
 
   const benefits = [
-    { icon: '📰', label: '每日时政精读', desc: '每日 4 篇官方材料精读解析' },
-    { icon: '📖', label: '今日词汇', desc: '每日时政词汇学习与记忆' },
-    { icon: '✏️', label: '配套练习生成', desc: 'AI 生成配套选择题与判断题' },
-    { icon: '📄', label: 'PDF 讲义导出', desc: '高质量讲义一键导出，含解析版' },
-    { icon: '🤖', label: 'AI 伴读', desc: '选中文字即可问AI，无次数限制' },
-    { icon: '🔄', label: '错题智能复盘', desc: 'AI 分析错因，生成复盘建议' },
-    { icon: '🔥', label: '趁热打铁强化', desc: '根据当日错题自动生成强化练习' },
+    { Icon: Newspaper, label: '每日时政精读', desc: '每日 4 篇官方材料精读解析', tone: 'blue' as const },
+    { Icon: BookOpen, label: '今日词汇', desc: '每日时政词汇学习与记忆', tone: 'green' as const },
+    { Icon: PencilLine, label: '配套练习生成', desc: 'AI 生成配套选择题与判断题', tone: 'gold' as const },
+    { Icon: FileText, label: 'PDF 讲义导出', desc: '高质量讲义一键导出，含解析版', tone: 'slate' as const },
+    { Icon: Bot, label: 'AI 伴读', desc: '选中文字即可问AI，无次数限制', tone: 'blue' as const },
+    { Icon: RotateCcw, label: '错题智能复盘', desc: 'AI 分析错因，生成复盘建议', tone: 'slate' as const },
+    { Icon: Flame, label: '趁热打铁强化', desc: '根据当日错题自动生成强化练习', tone: 'red' as const },
   ];
 
   return (
-    <div className="flex flex-col h-full bg-[#f2f4f8] overflow-hidden">
+    <div ref={scope} className="flex flex-col h-full bg-[#f2f4f8] overflow-hidden">
       <IOSStatusBar />
       <BackNav title="会员权益" onBack={goBack} />
 
       <div className="flex-1 overflow-y-auto px-[16px] pt-[8px] pb-[8px]">
         {/* Hero */}
-        <div className="bg-[#1e3a5f] rounded-[16px] p-[20px] mb-[16px] text-center"
+        <div className="profile-motion bg-[#1e3a5f] rounded-[16px] p-[20px] mb-[16px] text-center"
           style={{ boxShadow: '0 4px 16px rgba(30,58,95,0.25)' }}>
           <div className="w-[48px] h-[48px] rounded-full bg-[rgba(255,255,255,0.15)] flex items-center justify-center mx-auto mb-[10px]">
-            <span className="text-[24px]">👑</span>
+            <Crown size={24} color="#f6e6bd" strokeWidth={1.8} />
           </div>
           <p className="font-['Noto_Sans_SC:Bold',sans-serif] font-bold text-[20px] text-white mb-[4px]">岸岸通会员</p>
           <p className="font-['Noto_Sans_SC:Regular',sans-serif] text-[13px] text-[rgba(255,255,255,0.7)]">
@@ -169,21 +242,18 @@ export function MembershipPage({ navigate, goBack, onTabChange }: Props) {
         </div>
 
         {/* Benefits */}
-        <div className="bg-white rounded-[14px] p-[16px] mb-[14px]" style={{ boxShadow: '0 1px 4px rgba(0,0,0,0.06)' }}>
+        <div className="profile-motion bg-white rounded-[14px] p-[16px] mb-[14px]" style={{ boxShadow: '0 1px 4px rgba(0,0,0,0.06)' }}>
           <p className="font-['Noto_Sans_SC:Bold',sans-serif] font-bold text-[14px] text-[#1b2d4f] mb-[12px]">会员权益</p>
           <div className="space-y-[12px]">
-            {benefits.map(({ icon, label, desc }) => (
+            {benefits.map(({ Icon, label, desc, tone }) => (
               <div key={label} className="flex items-start gap-[12px]">
-                <span className="text-[18px] mt-[1px] flex-shrink-0">{icon}</span>
+                <IconTile Icon={Icon} tone={tone} />
                 <div>
                   <p className="font-['Noto_Sans_SC:Medium',sans-serif] font-medium text-[14px] text-[#1b2d4f]">{label}</p>
                   <p className="font-['Noto_Sans_SC:Regular',sans-serif] text-[12px] text-[#9baabb] mt-[1px]">{desc}</p>
                 </div>
                 <div className="ml-auto">
-                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                    <circle cx="8" cy="8" r="7.5" fill="#2e7a3c"/>
-                    <path d="M5 8l2.5 2.5L11 5" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                  </svg>
+                  <CheckCircle2 size={16} color="#2e7a3c" strokeWidth={2} />
                 </div>
               </div>
             ))}
@@ -191,14 +261,14 @@ export function MembershipPage({ navigate, goBack, onTabChange }: Props) {
         </div>
 
         {/* Plans */}
-        <div className="mb-[14px]">
+        <div className="profile-motion mb-[14px]">
           <p className="font-['Noto_Sans_SC:Bold',sans-serif] font-bold text-[14px] text-[#1b2d4f] mb-[10px]">选择套餐</p>
           <div className="space-y-[8px]">
             {plans.map(plan => (
               <button
                 key={plan.id}
                 onClick={() => setSelectedPlan(plan.id)}
-                className={`w-full text-left px-[16px] py-[14px] rounded-[14px] border-[1.5px] flex items-center justify-between active:opacity-90 ${
+                className={`profile-pressable w-full text-left px-[16px] py-[14px] rounded-[14px] border-[1.5px] flex items-center justify-between active:opacity-90 ${
                   selectedPlan === plan.id
                     ? 'border-[#1e3a5f] bg-[#eef3fb]'
                     : 'border-[#e3e8f0] bg-white'
@@ -227,7 +297,7 @@ export function MembershipPage({ navigate, goBack, onTabChange }: Props) {
 
         {/* CTA */}
         <button
-          className="w-full py-[16px] rounded-[14px] bg-[#1e3a5f] text-white font-['Noto_Sans_SC:Bold',sans-serif] font-bold text-[16px] active:opacity-80 mb-[10px]"
+          className="profile-motion profile-pressable w-full py-[16px] rounded-[14px] bg-[#1e3a5f] text-white font-['Noto_Sans_SC:Bold',sans-serif] font-bold text-[16px] active:opacity-80 mb-[10px]"
           style={{ boxShadow: '0 4px 12px rgba(30,58,95,0.3)' }}
         >
           开通会员

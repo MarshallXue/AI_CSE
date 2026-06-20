@@ -1,5 +1,17 @@
 import { useState } from 'react';
-import { ChevronRight } from 'lucide-react';
+import {
+  BarChart3,
+  BookOpen,
+  CheckCircle2,
+  ChevronRight,
+  ClipboardList,
+  Flame,
+  LineChart,
+  Newspaper,
+  PencilLine,
+  RotateCcw,
+  type LucideIcon,
+} from 'lucide-react';
 import {
   IOSStatusBar, BackNav, AIInputBar, BottomNav,
   NavigateFn, Tag,
@@ -9,6 +21,31 @@ interface Props {
   navigate: NavigateFn;
   goBack: () => void;
   onTabChange: (tab: 'today' | 'wrongbank' | 'review' | 'profile') => void;
+}
+
+function ReviewIconTile({
+  Icon,
+  bg = '#eef3ff',
+  color = '#2b5fbf',
+  size = 16,
+}: {
+  Icon: LucideIcon;
+  bg?: string;
+  color?: string;
+  size?: number;
+}) {
+  return (
+    <span
+      className="flex shrink-0 items-center justify-center rounded-[9px]"
+      style={{
+        width: size === 16 ? 32 : 28,
+        height: size === 16 ? 32 : 28,
+        backgroundColor: bg,
+      }}
+    >
+      <Icon size={size} strokeWidth={1.85} color={color} />
+    </span>
+  );
 }
 
 // ─── Page 9: Review Home ───────────────────────────────────────────────────────
@@ -50,7 +87,7 @@ export function ReviewHomePage({ navigate, goBack, onTabChange }: Props) {
             <div className="flex-1">
               <div className="flex items-center gap-[8px] mb-[8px]">
                 <div className="w-[28px] h-[28px] rounded-[8px] bg-[rgba(255,255,255,0.15)] flex items-center justify-center">
-                  <span className="text-[14px]">🔥</span>
+                  <Flame size={15} color="#f6e6bd" strokeWidth={1.9} />
                 </div>
                 <p className="font-['Noto_Sans_SC:Bold',sans-serif] font-bold text-[17px] text-white">趁热打铁</p>
               </div>
@@ -107,13 +144,13 @@ export function ReviewHomePage({ navigate, goBack, onTabChange }: Props) {
             <p className="font-['Noto_Sans_SC:Bold',sans-serif] font-bold text-[14px] text-[#1b2d4f]">明日计划</p>
           </div>
           {[
-            { label: '资料分析', time: '20 分钟', icon: '📊' },
-            { label: '常识时政', time: '10 分钟', icon: '📰' },
-            { label: '错题回看', time: '15 分钟', icon: '📋' },
-          ].map(({ label, time, icon }) => (
+            { label: '资料分析', time: '20 分钟', Icon: BarChart3, bg: '#eef3ff', color: '#2b5fbf' },
+            { label: '常识时政', time: '10 分钟', Icon: Newspaper, bg: '#eaf5ec', color: '#2e7a3c' },
+            { label: '错题回看', time: '15 分钟', Icon: ClipboardList, bg: '#fbf4e0', color: '#8a6a10' },
+          ].map(({ label, time, Icon, bg, color }) => (
             <div key={label} className="flex items-center justify-between py-[8px] border-b border-[#f5f5f5] last:border-none">
               <div className="flex items-center gap-[10px]">
-                <span className="text-[16px]">{icon}</span>
+                <ReviewIconTile Icon={Icon} bg={bg} color={color} size={15} />
                 <p className="font-['Noto_Sans_SC:Regular',sans-serif] text-[14px] text-[#2c3e52]">{label}</p>
               </div>
               <span className="font-['Noto_Sans_SC:Regular',sans-serif] text-[13px] text-[#9baabb]">{time}</span>
@@ -129,7 +166,7 @@ export function ReviewHomePage({ navigate, goBack, onTabChange }: Props) {
         >
           <div className="flex items-center gap-[10px]">
             <div className="w-[36px] h-[36px] rounded-[10px] bg-[#eef3ff] flex items-center justify-center">
-              <span className="text-[16px]">📈</span>
+              <LineChart size={18} color="#2b5fbf" strokeWidth={1.85} />
             </div>
             <div>
               <p className="font-['Noto_Sans_SC:Bold',sans-serif] font-bold text-[14px] text-[#1b2d4f]">今日复盘报告</p>
@@ -292,7 +329,10 @@ export function HotPracticePage({ navigate, goBack, onTabChange }: Props) {
         {submitted.every(Boolean) && (
           <div className="bg-[#eaf5ec] rounded-[14px] p-[16px] mb-[8px] text-center">
             <p className="font-['Noto_Sans_SC:Bold',sans-serif] font-bold text-[16px] text-[#2e7a3c] mb-[4px]">
-              🎉 趁热打铁完成！
+              <span className="inline-flex items-center justify-center gap-[6px]">
+                <CheckCircle2 size={17} strokeWidth={2} />
+                趁热打铁完成！
+              </span>
             </p>
             <p className="font-['Noto_Sans_SC:Regular',sans-serif] text-[13px] text-[#5e9a6c]">
               正确 {submitted.filter((_, i) => answers[i] !== null).length}/3 · 加入今日复盘
@@ -320,12 +360,14 @@ export function DailyReportPage({ navigate, goBack, onTabChange }: Props) {
           <p className="font-['Noto_Sans_SC:Regular',sans-serif] text-[12px] text-[#9baabb] mb-[10px]">2026年6月18日 · 连续复盘第 14 天</p>
           <div className="grid grid-cols-3 gap-[10px]">
             {[
-              { label: '精读', value: '2 篇', icon: '📖', color: '#2b5fbf', bg: '#eef3ff' },
-              { label: '配套题', value: '8 道', icon: '✏️', color: '#c09a30', bg: '#fbf4e0' },
-              { label: '错题复盘', value: '5 道', icon: '🔄', color: '#2e7a3c', bg: '#eaf5ec' },
-            ].map(({ label, value, icon, color, bg }) => (
+              { label: '精读', value: '2 篇', Icon: BookOpen, color: '#2b5fbf', bg: '#eef3ff' },
+              { label: '配套题', value: '8 道', Icon: PencilLine, color: '#c09a30', bg: '#fbf4e0' },
+              { label: '错题复盘', value: '5 道', Icon: RotateCcw, color: '#2e7a3c', bg: '#eaf5ec' },
+            ].map(({ label, value, Icon, color, bg }) => (
               <div key={label} className="rounded-[12px] p-[12px] text-center" style={{ backgroundColor: bg }}>
-                <p className="text-[20px] mb-[4px]">{icon}</p>
+                <div className="mb-[5px] flex justify-center">
+                  <Icon size={19} strokeWidth={1.9} style={{ color }} />
+                </div>
                 <p className="font-['Noto_Sans_SC:Bold',sans-serif] font-bold text-[16px]" style={{ color }}>{value}</p>
                 <p className="font-['Noto_Sans_SC:Regular',sans-serif] text-[11px] text-[#9baabb] mt-[2px]">{label}</p>
               </div>
@@ -403,13 +445,13 @@ export function DailyReportPage({ navigate, goBack, onTabChange }: Props) {
             <p className="font-['Noto_Sans_SC:Bold',sans-serif] font-bold text-[14px] text-[#1b2d4f]">明日计划</p>
           </div>
           {[
-            { label: '今日错题回看', detail: '8 道', icon: '🔄' },
-            { label: '时政词汇复习', detail: '10 个', icon: '📚' },
-            { label: '5 道强化练习', detail: '趁热打铁', icon: '🔥' },
-          ].map(({ label, detail, icon }) => (
+            { label: '今日错题回看', detail: '8 道', Icon: RotateCcw, bg: '#eef3ff', color: '#2b5fbf' },
+            { label: '时政词汇复习', detail: '10 个', Icon: BookOpen, bg: '#eaf5ec', color: '#2e7a3c' },
+            { label: '5 道强化练习', detail: '趁热打铁', Icon: Flame, bg: '#fff3f0', color: '#c84b2f' },
+          ].map(({ label, detail, Icon, bg, color }) => (
             <div key={label} className="flex items-center justify-between py-[9px] border-b border-[#f5f5f5] last:border-none">
               <div className="flex items-center gap-[10px]">
-                <span className="text-[16px]">{icon}</span>
+                <ReviewIconTile Icon={Icon} bg={bg} color={color} size={15} />
                 <p className="font-['Noto_Sans_SC:Regular',sans-serif] text-[14px] text-[#2c3e52]">{label}</p>
               </div>
               <span className="font-['Noto_Sans_SC:Regular',sans-serif] text-[12px] text-[#9baabb]">{detail}</span>

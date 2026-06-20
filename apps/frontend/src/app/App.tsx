@@ -1,4 +1,6 @@
-import { useState, useCallback, type ReactNode } from 'react';
+import { useRef, useState, useCallback, type ReactNode } from 'react';
+import gsap from 'gsap';
+import { useGSAP } from '@gsap/react';
 import { PageId } from './components/shared';
 import { TodayScreen } from './components/TodayScreen';
 import { NewsDetailScreen } from './components/NewsDetailScreen';
@@ -6,6 +8,8 @@ import { AIReadPage, PracticePage, ExportPage } from './components/news-pages';
 import { WrongBankHomePage, FolderDetailPage, OCRPage, WrongDetailPage } from './components/wrongbank-pages';
 import { ReviewHomePage, HotPracticePage, DailyReportPage } from './components/review-pages';
 import { ProfileHomePage, MembershipPage, ExportHistoryPage } from './components/profile-pages';
+
+gsap.registerPlugin(useGSAP);
 
 type Tab = 'today' | 'wrongbank' | 'review' | 'profile';
 
@@ -93,8 +97,26 @@ function PhoneFrame({ children }: { children: ReactNode }) {
 
 export default function App() {
   const [history, setHistory] = useState<PageId[]>(['today']);
+  const pageScope = useRef<HTMLDivElement>(null);
 
   const currentPage = history[history.length - 1];
+
+  useGSAP(() => {
+    if (!pageScope.current || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    gsap.fromTo(
+      pageScope.current,
+      { autoAlpha: 0.92, y: 6, filter: 'blur(2px)' },
+      {
+        autoAlpha: 1,
+        y: 0,
+        filter: 'blur(0px)',
+        duration: 0.18,
+        ease: 'power3.out',
+        clearProps: 'transform,opacity,visibility,filter',
+      },
+    );
+  }, { dependencies: [currentPage], scope: pageScope, revertOnUpdate: true });
 
   const navigate = useCallback((page: PageId) => {
     setHistory(prev => [...prev, page]);
@@ -149,7 +171,7 @@ export default function App() {
 
   return (
     <PhoneFrame>
-      <div className="size-full overflow-hidden">
+      <div ref={pageScope} className="size-full overflow-hidden">
         {renderPage()}
       </div>
     </PhoneFrame>
