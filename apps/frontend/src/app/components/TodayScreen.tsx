@@ -1,15 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import {
-  ArrowUp,
-  Camera,
-  Scan,
-  Quote,
-  BookOpen,
-  RotateCcw,
-  Star,
-  User,
-} from "lucide-react";
+import { AIInputBar, BottomNav } from "./shared";
 import { NewsTab } from "./NewsTab";
 import { VocabTab } from "./VocabTab";
 
@@ -114,13 +105,6 @@ function StatusBar() {
   );
 }
 
-const navItems = [
-  { id: "today" as NavTab, Icon: BookOpen, label: "今日" },
-  { id: "wrongbank" as NavTab, Icon: RotateCcw, label: "错题库" },
-  { id: "review" as NavTab, Icon: Star, label: "复盘" },
-  { id: "profile" as NavTab, Icon: User, label: "我的" },
-];
-
 export function TodayScreen({
   onOpenDetail,
   onTabChange,
@@ -129,9 +113,6 @@ export function TodayScreen({
   onTabChange?: (tab: NavTab) => void;
 }) {
   const [contentTab, setContentTab] = useState<ContentTab>("news");
-  const [navTab, setNavTab] = useState<NavTab>("today");
-  const [aiQuery, setAiQuery] = useState("");
-  const [aiFocused, setAiFocused] = useState(false);
 
   return (
     <div
@@ -235,143 +216,9 @@ export function TodayScreen({
           pointerEvents: "none",
         }}
       >
-        <motion.div
-          animate={{ y: aiFocused ? -6 : 0 }}
-          transition={{ duration: 0.26, ease: [0.25, 0.46, 0.45, 0.94] }}
-          style={{ width: "91%", pointerEvents: "all" }}
-        >
-          {/* Quick action chips — fade up when focused */}
-          <AnimatePresence>
-            {aiFocused && (
-              <motion.div
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 6 }}
-                transition={{ duration: 0.2, ease: "easeOut" }}
-                style={{
-                  display: "flex",
-                  gap: 7,
-                  marginBottom: 9,
-                  paddingLeft: 4,
-                }}
-              >
-                {[
-                  { Icon: Camera, label: "拍照" },
-                  { Icon: Scan, label: "截图" },
-                  { Icon: Quote, label: "引用文字" },
-                ].map(({ Icon, label }) => (
-                  <button
-                    key={label}
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 5,
-                      padding: "5px 12px 5px 10px",
-                      borderRadius: 20,
-                      backgroundColor: "#FFFFFF",
-                      border: "1px solid #EBF0F7",
-                      fontSize: 12,
-                      color: "#4A5E72",
-                      boxShadow: "0 1px 6px rgba(0,0,0,0.06), 0 0 0 0 transparent",
-                      cursor: "pointer",
-                      fontWeight: 400,
-                      letterSpacing: 0.1,
-                    }}
-                  >
-                    <Icon size={13} color="#64748B" strokeWidth={1.6} />
-                    {label}
-                  </button>
-                ))}
-              </motion.div>
-            )}
-          </AnimatePresence>
-
-          {/* Input pill */}
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              minHeight: 52,
-              padding: "0 10px 0 16px",
-              borderRadius: 20,
-              backgroundColor: "#FFFFFF",
-              border: aiFocused
-                ? "1.5px solid #1F5EFF"
-                : "1px solid #E2E8F0",
-              boxShadow: aiFocused
-                ? "0 4px 20px rgba(31,94,255,0.10), 0 1px 4px rgba(0,0,0,0.05)"
-                : "0 2px 10px rgba(0,0,0,0.06), 0 0 0 0 transparent",
-              transition: "border-color 0.2s ease, box-shadow 0.2s ease",
-              gap: 10,
-            }}
-          >
-            {/* Chat icon — bare, no pill background */}
-            <svg
-              width="20"
-              height="20"
-              viewBox="0 0 20 20"
-              fill="none"
-              style={{ flexShrink: 0, transition: "opacity 0.2s" }}
-            >
-              <path
-                d="M17 10.5C17 14.09 13.87 17 10 17C8.9 17 7.86 16.75 6.94 16.31L3 17.5L4.31 13.87C3.49 12.87 3 11.73 3 10.5C3 6.91 6.13 4 10 4C13.87 4 17 6.91 17 10.5Z"
-                stroke="#64748B"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-              <circle cx="7.5" cy="10.5" r="1" fill="#64748B" />
-              <circle cx="10" cy="10.5" r="1" fill="#64748B" />
-              <circle cx="12.5" cy="10.5" r="1" fill="#64748B" />
-            </svg>
-
-            {/* Input field */}
-            <input
-              type="text"
-              value={aiQuery}
-              onChange={(e) => setAiQuery(e.target.value)}
-              onFocus={() => setAiFocused(true)}
-              onBlur={() => setAiFocused(false)}
-              placeholder="问AI，选中文字、拍照或截图都可以"
-              style={{
-                flex: 1,
-                background: "transparent",
-                border: "none",
-                outline: "none",
-                fontSize: 14,
-                color: "#1B2D4F",
-                caretColor: "#1F5EFF",
-                fontWeight: 400,
-                lineHeight: 1,
-                padding: 0,
-              }}
-              className="placeholder:text-[#7A8798]"
-            />
-
-            {/* Send button */}
-            <button
-              style={{
-                width: 32,
-                height: 32,
-                borderRadius: "50%",
-                flexShrink: 0,
-                border: "none",
-                cursor: "pointer",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                backgroundColor: aiQuery.length > 0 ? "#1F5EFF" : "#EAF1FF",
-                transition: "background-color 0.18s ease",
-              }}
-            >
-              <ArrowUp
-                size={16}
-                color={aiQuery.length > 0 ? "#FFFFFF" : "#1F5EFF"}
-                strokeWidth={2.2}
-              />
-            </button>
-          </div>
-        </motion.div>
+        <div style={{ width: "94%", pointerEvents: "all" }}>
+          <AIInputBar />
+        </div>
       </div>
 
       {/* Tab Bar */}
@@ -381,82 +228,10 @@ export function TodayScreen({
           bottom: 0,
           left: 0,
           right: 0,
-          height: 83,
-          backgroundColor: "rgba(246,248,251,0.96)",
-          backdropFilter: "blur(20px)",
-          borderTop: "0.5px solid rgba(0,0,0,0.08)",
           zIndex: 50,
-          display: "flex",
-          flexDirection: "column",
         }}
       >
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-around",
-            alignItems: "flex-start",
-            paddingTop: 10,
-            flex: 1,
-          }}
-        >
-          {navItems.map(({ id, Icon, label }) => {
-            const active = navTab === id;
-            return (
-              <button
-                key={id}
-                onClick={() => {
-                  setNavTab(id);
-                  onTabChange?.(id);
-                }}
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  gap: 3,
-                  minWidth: 56,
-                  background: "none",
-                  border: "none",
-                  cursor: "pointer",
-                  padding: "2px 8px",
-                }}
-              >
-                <Icon
-                  size={22}
-                  color={active ? "#1E3A5F" : "#AABCCC"}
-                  strokeWidth={active ? 2.1 : 1.6}
-                />
-                <span
-                  style={{
-                    fontSize: 10.5,
-                    color: active ? "#1E3A5F" : "#AABCCC",
-                    fontWeight: active ? 600 : 400,
-                    letterSpacing: 0.2,
-                  }}
-                >
-                  {label}
-                </span>
-              </button>
-            );
-          })}
-        </div>
-
-        {/* Home indicator */}
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            paddingBottom: 8,
-          }}
-        >
-          <div
-            style={{
-              width: 134,
-              height: 5,
-              backgroundColor: "rgba(27,45,79,0.2)",
-              borderRadius: 3,
-            }}
-          />
-        </div>
+        <BottomNav activeTab="today" onTabChange={(tab) => onTabChange?.(tab)} />
       </div>
     </div>
   );

@@ -41,7 +41,7 @@ const pageToTab: Record<PageId, Tab> = {
 function PhoneFrame({ children }: { children: ReactNode }) {
   return (
     <div
-      className="min-h-screen flex items-center justify-center px-[16px] py-[24px]"
+      className="phone-stage min-h-[100dvh] flex items-center justify-center px-[16px] py-[24px]"
       style={{
         backgroundImage: [
           "url(\"data:image/svg+xml;utf8,<svg viewBox='0 0 1765 1024' xmlns='http://www.w3.org/2000/svg' preserveAspectRatio='none'><rect x='0' y='0' height='100%' width='100%' fill='url(%23g1)'/><defs><radialGradient id='g1' gradientUnits='userSpaceOnUse' cx='0' cy='0' r='10' gradientTransform='matrix(0 -150 -150 0 353 512)'><stop stop-color='rgba(180,195,215,0.4)' offset='0'/><stop stop-color='rgba(0,0,0,0)' offset='0.5'/></radialGradient></defs></svg>\")",
@@ -49,9 +49,8 @@ function PhoneFrame({ children }: { children: ReactNode }) {
         ].join(', '),
       }}
     >
-      {/* Outer phone shell */}
       <div
-        className="relative rounded-[55px] flex-shrink-0"
+        className="phone-shell relative rounded-[55px] flex-shrink-0"
         style={{
           width: '414px',
           height: '896px',
@@ -59,9 +58,8 @@ function PhoneFrame({ children }: { children: ReactNode }) {
           boxShadow: '0px 30px 80px rgba(0,0,0,0.45), 0px 8px 24px rgba(0,0,0,0.3)',
         }}
       >
-        {/* Screen area */}
         <div
-          className="overflow-hidden"
+          className="phone-screen overflow-hidden"
           style={{
             position: 'absolute',
             top: '12px',
@@ -75,19 +73,17 @@ function PhoneFrame({ children }: { children: ReactNode }) {
           {children}
         </div>
 
-        {/* Side buttons */}
-        <div className="absolute bg-[#2a2a2c] h-[32px] left-[-3px] rounded-l-[2px] top-[120px] w-[3px]" />
-        <div className="absolute bg-[#2a2a2c] h-[62px] left-[-3px] rounded-l-[2px] top-[168px] w-[3px]" />
-        <div className="absolute bg-[#2a2a2c] h-[62px] left-[-3px] rounded-l-[2px] top-[244px] w-[3px]" />
-        <div className="absolute bg-[#2a2a2c] h-[82px] right-[-3px] rounded-r-[2px] top-[180px] w-[3px]" />
+        <div className="phone-hardware absolute bg-[#2a2a2c] h-[32px] left-[-3px] rounded-l-[2px] top-[120px] w-[3px]" />
+        <div className="phone-hardware absolute bg-[#2a2a2c] h-[62px] left-[-3px] rounded-l-[2px] top-[168px] w-[3px]" />
+        <div className="phone-hardware absolute bg-[#2a2a2c] h-[62px] left-[-3px] rounded-l-[2px] top-[244px] w-[3px]" />
+        <div className="phone-hardware absolute bg-[#2a2a2c] h-[82px] right-[-3px] rounded-r-[2px] top-[180px] w-[3px]" />
 
-        {/* Reflection overlay */}
         <div
-          className="absolute inset-0 rounded-[55px] pointer-events-none"
+          className="phone-reflection absolute inset-0 rounded-[55px] pointer-events-none"
           style={{ background: 'linear-gradient(114.8deg, rgba(255,255,255,0.06) 0%, rgba(0,0,0,0) 50%)' }}
         />
         <div
-          className="absolute inset-0 rounded-[55px] pointer-events-none"
+          className="phone-reflection absolute inset-0 rounded-[55px] pointer-events-none"
           style={{ boxShadow: 'inset 0px 1px 0px rgba(255,255,255,0.08)' }}
         />
       </div>
