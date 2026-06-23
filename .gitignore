@@ -10,5 +10,10 @@ vite-dev.*.log
 .env.*
 !.env.example
 
+mastra_agent/src/mastra/public/*.db
+mastra_agent/src/mastra/public/*.db-*
+mastra_agent/src/mastra/public/*.duckdb
+mastra_agent/src/mastra/public/*.duckdb.*
+
 .DS_Store
 Thumbs.db
