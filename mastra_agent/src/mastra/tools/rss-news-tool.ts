@@ -2,7 +2,7 @@ import { createTool } from '@mastra/core/tools'
 import { z } from 'zod'
 import { rssSources, type RssSource } from '../config/rss-sources'
 
-const rssCategorySchema = z.enum(['politics', 'tech', 'legal', 'society', 'economy'])
+const rssCategorySchema = z.enum(['politics', 'tech', 'legal', 'society', 'economy', 'theory'])
 
 const rssNewsItemSchema = z.object({
   sourceId: z.string(),
