@@ -1,69 +1,106 @@
-export type RssSourceCategory = 'politics' | 'tech' | 'legal' | 'society' | 'economy'
+// RSS 信源配置表
+
+export type RssSourceCategory =
+  | 'politics' // 时政/要闻
+  | 'society'  // 社会民生/基层治理
+  | 'economy'  // 财经/宏观经济
+  | 'legal'    // 法治
+  | 'theory'   // 理论评论
 
 export type RssSource = {
+  // 程序内部唯一标识，稳定后尽量不要改
   id: string
+
+  // 给用户、日志、后台看的来源名称
   name: string
+
+  // RSS 订阅地址
   url: string
+
+  // 公考内容分类
   category: RssSourceCategory
-  authority: 'official' | 'state-media'
+
+  // 来源权威性。中新网属于主流媒体源
+  authority: 'state-media'
+
+  // 这个来源对公考备考的价值
   examValue: string
+
+  // 是否启用该来源
+  enabled: boolean
+
+  // 是否根据 RSS 里的文章链接继续抓取原文
+  fullText: boolean
+
+  // 抓取原文前要移除的页面元素
+  removeSelectors?: string[]
 }
 
 export const rssSources: RssSource[] = [
   {
-    id: 'xinhua-politics',
-    name: '新华网时政',
-    url: 'http://www.xinhuanet.com/politics/news_politics.xml',
+    id: 'chinanews-importnews',
+    name: '中新网要闻导读',
+    url: 'https://www.chinanews.com.cn/rss/importnews.xml',
     category: 'politics',
     authority: 'state-media',
-    examValue: '时政热点、政策表述、申论素材',
+    examValue: '每日重点新闻、时政热点、申论素材',
+    enabled: true,
+    fullText: true,
+    removeSelectors: ['script', 'style', 'nav', 'footer'],
   },
   {
-    id: 'xinhua-tech',
-    name: '新华网科技',
-    url: 'http://www.xinhuanet.com/tech/news_tech.xml',
-    category: 'tech',
-    authority: 'state-media',
-    examValue: '科技常识、新质生产力、科技创新素材',
-  },
-  {
-    id: 'xinhua-legal',
-    name: '新华网法治',
-    url: 'http://www.xinhuanet.com/legal/news_legal.xml',
-    category: 'legal',
-    authority: 'state-media',
-    examValue: '法治常识、依法治国、公共治理素材',
-  },
-  {
-    id: 'people-politics',
-    name: '人民网时政',
-    url: 'http://www.people.com.cn/rss/politics.xml',
+    id: 'chinanews-politics',
+    name: '中新网时政新闻',
+    url: 'https://www.chinanews.com.cn/rss/china.xml',
     category: 'politics',
     authority: 'state-media',
-    examValue: '中央政策、重要会议、政治理论素材',
+    examValue: '时政热点、政策表达、公共治理素材',
+    enabled: true,
+    fullText: true,
+    removeSelectors: ['script', 'style', 'nav', 'footer'],
   },
   {
-    id: 'people-society',
-    name: '人民网社会',
-    url: 'http://www.people.com.cn/rss/society.xml',
+    id: 'chinanews-society',
+    name: '中新网社会新闻',
+    url: 'https://www.chinanews.com.cn/rss/society.xml',
     category: 'society',
     authority: 'state-media',
-    examValue: '基层治理、民生热点、社会现象素材',
+    examValue: '社会治理、民生热点、基层治理素材',
+    enabled: true,
+    fullText: true,
+    removeSelectors: ['script', 'style', 'nav', 'footer'],
   },
   {
-    id: 'people-legal',
-    name: '人民网法治',
-    url: 'http://www.people.com.cn/rss/legal.xml',
+    id: 'chinanews-finance',
+    name: '中新网财经新闻',
+    url: 'https://www.chinanews.com.cn/rss/finance.xml',
+    category: 'economy',
+    authority: 'state-media',
+    examValue: '宏观经济、产业发展、就业民生、申论经济素材',
+    enabled: true,
+    fullText: true,
+    removeSelectors: ['script', 'style', 'nav', 'footer'],
+  },
+  {
+    id: 'chinanews-legal',
+    name: '中新网法治新闻',
+    url: 'https://www.chinanews.com.cn/rss/fz.xml',
     category: 'legal',
     authority: 'state-media',
-    examValue: '法律常识、法治热点、案例素材',
+    examValue: '法治常识、依法治国、社会治理案例',
+    enabled: true,
+    fullText: true,
+    removeSelectors: ['script', 'style', 'nav', 'footer'],
   },
   {
-    id: 'stats-latest',
-    name: '国家统计局最新发布',
-    url: 'https://www.stats.gov.cn/sj/zxfb/rss',
-    category: 'economy',
-    authority: 'official',
-    examValue: '宏观经济、就业、人口、产业数据素材',
+    id: 'chinanews-theory',
+    name: '中新网理论评论',
+    url: 'https://www.chinanews.com.cn/rss/theory.xml',
+    category: 'theory',
+    authority: 'state-media',
+    examValue: '政治理论、评论表达、申论规范表述',
+    enabled: true,
+    fullText: true,
+    removeSelectors: ['script', 'style', 'nav', 'footer'],
   },
 ]
