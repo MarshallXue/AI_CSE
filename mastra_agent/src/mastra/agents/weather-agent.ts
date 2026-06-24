@@ -3,6 +3,7 @@ import { weatherTool } from '../tools/weather-tool'
 import { Workspace, LocalFilesystem } from '@mastra/core/workspace'
 import { tr } from 'zod/locales'
 import process from 'node:process'
+import { tavilyMcp } from '../mcp/tavily'
 
 const workspacePath = process.env.WORKSPACE_PATH
 
@@ -21,7 +22,7 @@ const workspace = new Workspace({
 
 export const weatherAgent = new Agent({
   id: 'weather-agent',
-  name: 'Weather Agent',
+  name: '天气Agent',
   instructions: `
       You are a helpful weather assistant that provides accurate weather information.
 
@@ -35,7 +36,10 @@ export const weatherAgent = new Agent({
       Use the weatherTool to fetch current weather data.
 `,
   model: 'deepseek/deepseek-v4-flash',
-  tools: { weatherTool },
+  tools: { 
+    weatherTool,
+    ...(await tavilyMcp.listTools())
+  },
   workspace:workspace
 })
 
