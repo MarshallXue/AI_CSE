@@ -1,8 +1,13 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
+import { CalendarDays, Settings2 } from "lucide-react";
 import { AIInputBar, BottomNav } from "./shared";
 import { NewsTab } from "./NewsTab";
-import { VocabTab } from "./VocabTab";
+import {
+  VocabTab,
+  VOCAB_OPEN_CALENDAR_EVENT,
+  VOCAB_OPEN_SETTINGS_EVENT,
+} from "./VocabTab";
 
 type ContentTab = "news" | "vocab";
 type NavTab = "today" | "wrongbank" | "review" | "profile";
@@ -105,6 +110,29 @@ function StatusBar() {
   );
 }
 
+function HeaderIconButton({
+  label,
+  eventName,
+  children,
+}: {
+  label: string;
+  eventName: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <button
+      onClick={() => window.dispatchEvent(new Event(eventName))}
+      className="flex h-[30px] w-[30px] items-center justify-center rounded-[10px] bg-white"
+      style={{
+        boxShadow: "0 5px 16px rgba(27,45,79,0.08), 0 0 0 0.833px rgba(27,45,79,0.05)",
+      }}
+      aria-label={label}
+    >
+      {children}
+    </button>
+  );
+}
+
 export function TodayScreen({
   onOpenDetail,
   onTabChange,
@@ -125,7 +153,15 @@ export function TodayScreen({
       </div>
 
       {/* Header — segmented control only, centered */}
-      <div style={{ flexShrink: 0, padding: "10px 20px 14px", display: "flex", justifyContent: "center" }}>
+      <div
+        style={{
+          flexShrink: 0,
+          padding: "10px 20px 14px",
+          display: "flex",
+          justifyContent: "center",
+          position: "relative",
+        }}
+      >
         {/* Segmented Control */}
         <div
           style={{
@@ -164,6 +200,26 @@ export function TodayScreen({
             );
           })}
         </div>
+
+        {contentTab === "vocab" && (
+          <div
+            style={{
+              position: "absolute",
+              right: 20,
+              top: 10,
+              display: "flex",
+              gap: 7,
+              alignItems: "center",
+            }}
+          >
+            <HeaderIconButton label="打开词汇日历" eventName={VOCAB_OPEN_CALENDAR_EVENT}>
+              <CalendarDays size={15} color="#1E3A5F" strokeWidth={1.9} />
+            </HeaderIconButton>
+            <HeaderIconButton label="打开词汇设置" eventName={VOCAB_OPEN_SETTINGS_EVENT}>
+              <Settings2 size={15} color="#1E3A5F" strokeWidth={1.9} />
+            </HeaderIconButton>
+          </div>
+        )}
       </div>
 
       {/* Scrollable content */}
