@@ -1,0 +1,4 @@
+name=Quizlet: More than Flashcards
+bundleId=com.quizlet.quizlet
+appStoreUrl=https://apps.apple.com/us/app/quizlet-more-than-flashcards/id546473125?uo=4
+seller=Quizlet Inc

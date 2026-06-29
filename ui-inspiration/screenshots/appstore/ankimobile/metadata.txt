@@ -1,0 +1,4 @@
+name=AnkiMobile Flashcards
+bundleId=net.ichi2.anki
+appStoreUrl=https://apps.apple.com/us/app/ankimobile-flashcards/id373493387?uo=4
+seller=Anki Software LLC

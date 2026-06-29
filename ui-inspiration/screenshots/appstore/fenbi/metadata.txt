@@ -1,0 +1,4 @@
+name=粉笔-大学生及在职考编考证神器
+bundleId=com.fenbi.ape.gwy
+appStoreUrl=https://apps.apple.com/cn/app/%E7%B2%89%E7%AC%94-%E5%A4%A7%E5%AD%A6%E7%94%9F%E5%8F%8A%E5%9C%A8%E8%81%8C%E8%80%83%E7%BC%96%E8%80%83%E8%AF%81%E7%A5%9E%E5%99%A8/id584660358?uo=4
+seller=Beijing Fenbilantian Technology Co.,Ltd
