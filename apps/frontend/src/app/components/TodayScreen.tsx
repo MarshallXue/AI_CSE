@@ -1,108 +1,44 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { AIInputBar, BottomNav } from "./shared";
+import { CalendarDays, Settings2 } from "lucide-react";
+import { AIInputBar, BottomNav, IOSStatusBar } from "./shared";
 import { NewsTab } from "./NewsTab";
-import { VocabTab } from "./VocabTab";
+import {
+  VocabTab,
+  VOCAB_OPEN_CALENDAR_EVENT,
+  VOCAB_OPEN_SETTINGS_EVENT,
+} from "./VocabTab";
 
 type ContentTab = "news" | "vocab";
 type NavTab = "today" | "wrongbank" | "review" | "profile";
 
-function StatusBar() {
+function HeaderIconButton({
+  label,
+  eventName,
+  children,
+}: {
+  label: string;
+  eventName: string;
+  children: React.ReactNode;
+}) {
   return (
-    <div
-      className="relative flex items-center justify-between"
-      style={{ height: 54, paddingLeft: 22, paddingRight: 20, paddingTop: 14 }}
+    <button
+      onClick={() => window.dispatchEvent(new Event(eventName))}
+      className="app-pressable flex h-[32px] w-[32px] items-center justify-center bg-[var(--app-surface)]"
+      style={{
+        borderRadius: "var(--app-radius-control)",
+        boxShadow: "var(--app-shadow-hairline)",
+      }}
+      aria-label={label}
     >
-      {/* Time */}
-      <span
-        style={{
-          fontSize: 15.5,
-          fontWeight: 600,
-          color: "#1B2D4F",
-          letterSpacing: -0.3,
-          lineHeight: 1,
-        }}
-      >
-        9:41
-      </span>
-
-      {/* Dynamic island */}
-      <div
-        className="absolute"
-        style={{
-          left: "50%",
-          top: 12,
-          transform: "translateX(-50%)",
-          width: 118,
-          height: 34,
-          backgroundColor: "#0A0A0A",
-          borderRadius: 20,
-        }}
-      />
-
-      {/* Status icons */}
-      <div className="flex items-center gap-[6px]">
-        {/* Signal */}
-        <svg width="18" height="13" viewBox="0 0 18 13" fill="none">
-          <rect x="0" y="6" width="3.5" height="7" rx="1" fill="#1B2D4F" opacity="0.4" />
-          <rect x="4.8" y="4" width="3.5" height="9" rx="1" fill="#1B2D4F" opacity="0.6" />
-          <rect x="9.6" y="2" width="3.5" height="11" rx="1" fill="#1B2D4F" opacity="0.8" />
-          <rect x="14.4" y="0" width="3.5" height="13" rx="1" fill="#1B2D4F" />
-        </svg>
-        {/* WiFi */}
-        <svg width="16" height="12" viewBox="0 0 16 12" fill="none">
-          <circle cx="8" cy="10.5" r="1.5" fill="#1B2D4F" />
-          <path
-            d="M4.8 7.8C5.8 6.7 6.8 6.1 8 6.1C9.2 6.1 10.2 6.7 11.2 7.8"
-            stroke="#1B2D4F"
-            strokeWidth="1.3"
-            strokeLinecap="round"
-            opacity="0.7"
-          />
-          <path
-            d="M2.2 5.2C3.8 3.5 5.8 2.6 8 2.6C10.2 2.6 12.2 3.5 13.8 5.2"
-            stroke="#1B2D4F"
-            strokeWidth="1.3"
-            strokeLinecap="round"
-            opacity="0.5"
-          />
-        </svg>
-        {/* Battery */}
-        <div className="flex items-center">
-          <div
-            style={{
-              width: 26,
-              height: 13,
-              border: "1.5px solid #1B2D4F",
-              borderRadius: 4,
-              padding: "1.5px",
-              position: "relative",
-              opacity: 0.8,
-            }}
-          >
-            <div
-              style={{
-                width: "78%",
-                height: "100%",
-                backgroundColor: "#1B2D4F",
-                borderRadius: 2,
-              }}
-            />
-          </div>
-          <div
-            style={{
-              width: 2,
-              height: 5,
-              backgroundColor: "#1B2D4F",
-              borderRadius: "0 1px 1px 0",
-              marginLeft: 1,
-              opacity: 0.6,
-            }}
-          />
-        </div>
-      </div>
-    </div>
+      {children}
+    </button>
   );
+}
+
+function getTodayLabel() {
+  const today = new Date();
+  return `${today.getMonth() + 1}月${today.getDate()}日`;
 }
 
 export function TodayScreen({
@@ -113,56 +49,101 @@ export function TodayScreen({
   onTabChange?: (tab: NavTab) => void;
 }) {
   const [contentTab, setContentTab] = useState<ContentTab>("news");
+  const todayLabel = getTodayLabel();
 
   return (
     <div
       className="relative flex flex-col"
-      style={{ height: "100%", backgroundColor: "#F2F4F8", overflow: "hidden" }}
+      style={{ height: "100%", backgroundColor: "var(--app-page)", overflow: "hidden" }}
     >
       {/* Status Bar */}
       <div style={{ flexShrink: 0 }}>
-        <StatusBar />
+        <IOSStatusBar />
       </div>
 
-      {/* Header — segmented control only, centered */}
-      <div style={{ flexShrink: 0, padding: "10px 20px 14px", display: "flex", justifyContent: "center" }}>
-        {/* Segmented Control */}
-        <div
-          style={{
-            display: "inline-flex",
-            padding: 3,
-            backgroundColor: "#E3E8F0",
-            borderRadius: 10,
-          }}
-        >
-          {(["news", "vocab"] as const).map((tab) => {
-            const label = tab === "news" ? "今日新闻" : "今日词汇";
-            const active = contentTab === tab;
-            return (
-              <button
-                key={tab}
-                onClick={() => setContentTab(tab)}
-                style={{
-                  position: "relative",
-                  padding: "6px 18px",
-                  borderRadius: 8,
-                  fontSize: 13,
-                  fontWeight: active ? 600 : 400,
-                  color: active ? "#FFFFFF" : "#7A8FA6",
-                  backgroundColor: active ? "#1E3A5F" : "transparent",
-                  boxShadow: active
-                    ? "0 1px 5px rgba(30,58,95,0.28), 0 0 0 0.5px rgba(30,58,95,0.15)"
-                    : "none",
-                  letterSpacing: 0.1,
-                  transition: "all 0.18s ease",
-                  border: "none",
-                  cursor: "pointer",
-                }}
-              >
-                {label}
-              </button>
-            );
-          })}
+      {/* Header */}
+      <div
+        style={{
+          flexShrink: 0,
+          padding: "8px 20px 13px",
+        }}
+      >
+        <div className="mb-[12px] flex items-start justify-between gap-[12px]">
+          <div>
+            <p className="text-[12px] leading-[18px] text-[var(--app-muted)]">
+              {todayLabel} · 04:00 更新
+            </p>
+            <h1 className="mt-[1px] text-[24px] font-bold leading-[32px] tracking-[-0.3px] text-[var(--app-ink)]">
+              今日学习
+            </h1>
+          </div>
+
+          {contentTab === "vocab" ? (
+            <div className="flex shrink-0 gap-[7px] pt-[3px]">
+              <HeaderIconButton label="打开词汇日历" eventName={VOCAB_OPEN_CALENDAR_EVENT}>
+                <CalendarDays size={15} color="var(--app-navy)" strokeWidth={1.9} />
+              </HeaderIconButton>
+              <HeaderIconButton label="打开词汇设置" eventName={VOCAB_OPEN_SETTINGS_EVENT}>
+                <Settings2 size={15} color="var(--app-navy)" strokeWidth={1.9} />
+              </HeaderIconButton>
+            </div>
+          ) : (
+            <span className="mt-[4px] rounded-full bg-[var(--app-surface)] px-[10px] py-[6px] text-[12px] font-medium text-[var(--app-muted)] shadow-[var(--app-shadow-hairline)]">
+              公考晨读
+            </span>
+          )}
+        </div>
+
+        <div className="mb-[12px] flex flex-wrap gap-[7px]">
+          <span className="rounded-full bg-[var(--app-surface)] px-[10px] py-[5px] text-[12px] text-[var(--app-body)] shadow-[var(--app-shadow-hairline)]">
+            4 篇时政
+          </span>
+          <span className="rounded-full bg-[var(--app-surface)] px-[10px] py-[5px] text-[12px] text-[var(--app-body)] shadow-[var(--app-shadow-hairline)]">
+            3 组词汇
+          </span>
+          <span className="rounded-full bg-[var(--app-navy-soft)] px-[10px] py-[5px] text-[12px] font-medium text-[var(--app-navy)]">
+            读完可进入复盘
+          </span>
+        </div>
+
+        <div className="flex justify-center">
+          <div
+            style={{
+              display: "inline-flex",
+              padding: 3,
+              backgroundColor: "rgba(30,58,95,0.08)",
+              borderRadius: "var(--app-radius-control)",
+            }}
+          >
+            {(["news", "vocab"] as const).map((tab) => {
+              const label = tab === "news" ? "今日新闻" : "今日词汇";
+              const active = contentTab === tab;
+              return (
+                <button
+                  key={tab}
+                  onClick={() => setContentTab(tab)}
+                  style={{
+                    position: "relative",
+                    padding: "6px 18px",
+                    borderRadius: 8,
+                    fontSize: 13,
+                    fontWeight: active ? 600 : 400,
+                    color: active ? "#FFFFFF" : "var(--app-muted)",
+                    backgroundColor: active ? "var(--app-navy)" : "transparent",
+                    boxShadow: active
+                      ? "0 1px 5px rgba(30,58,95,0.28), 0 0 0 0.5px rgba(30,58,95,0.15)"
+                      : "none",
+                    letterSpacing: 0.1,
+                    transition: "all 0.18s ease",
+                    border: "none",
+                    cursor: "pointer",
+                  }}
+                >
+                  {label}
+                </button>
+              );
+            })}
+          </div>
         </div>
       </div>
 

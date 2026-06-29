@@ -7,6 +7,7 @@ import { NewsDetailScreen } from './components/NewsDetailScreen';
 import { AIReadPage, PracticePage, ExportPage } from './components/news-pages';
 import { WrongBankHomePage, FolderDetailPage, OCRPage, WrongDetailPage } from './components/wrongbank-pages';
 import { ReviewHomePage, HotPracticePage, DailyReportPage } from './components/review-pages';
+import { FlashcardReviewPage } from './components/review/FlashcardReviewPage';
 import { ProfileHomePage, MembershipPage, ExportHistoryPage } from './components/profile-pages';
 
 gsap.registerPlugin(useGSAP);
@@ -31,6 +32,7 @@ const pageToTab: Record<PageId, Tab> = {
   'ocr': 'wrongbank',
   'wrong-detail': 'wrongbank',
   'review': 'review',
+  'flashcard-review': 'review',
   'hot-practice': 'review',
   'daily-report': 'review',
   'profile': 'profile',
@@ -150,6 +152,8 @@ export default function App() {
         return <WrongDetailPage {...pageProps} />;
       case 'review':
         return <ReviewHomePage {...pageProps} />;
+      case 'flashcard-review':
+        return <FlashcardReviewPage {...pageProps} />;
       case 'hot-practice':
         return <HotPracticePage {...pageProps} />;
       case 'daily-report':

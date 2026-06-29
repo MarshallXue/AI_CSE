@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import {
   BookmarkPlus,
@@ -9,6 +9,11 @@ import {
   Volume2,
   X,
 } from "lucide-react";
+import vocabularyEntries from "../data/vocabulary-entries.json";
+import { pinyin } from "pinyin-pro";
+
+export const VOCAB_OPEN_CALENDAR_EVENT = "ai-cse:vocab-open-calendar";
+export const VOCAB_OPEN_SETTINGS_EVENT = "ai-cse:vocab-open-settings";
 
 interface VocabItem {
   id: string;
@@ -29,6 +34,134 @@ interface VocabGroup {
   examHint: string;
   masteredCount: number;
   words: VocabItem[];
+}
+
+interface RawVocabEntry {
+  word: string;
+  kind: string;
+  volume: string;
+  source_file: string;
+  group_no_raw: string | null;
+  group_name: string | null;
+  group_expected_count: number | null;
+  sub_category: string | null;
+  meaning: string;
+  examples: string[];
+  pages: number[];
+}
+
+function makeGroupTitle(entry: RawVocabEntry) {
+  const groupNo = entry.group_no_raw ? `第${entry.group_no_raw}组` : "未分组";
+  return `${groupNo} · ${entry.group_name ?? "词汇辨析"}`;
+}
+
+function getEntrySource(entry: RawVocabEntry) {
+  const pageText = entry.pages.length > 0 ? `第 ${entry.pages.join("、")} 页` : "页码未识别";
+  return `${entry.volume} · ${pageText}`;
+}
+
+const PINYIN_OVERRIDES: Record<string, string> = {
+  虚与委蛇: "xū yǔ wēi yí",
+  各行其是: "gè xíng qí shì",
+  老调重弹: "lǎo diào chóng tán",
+  车载斗量: "chē zài dǒu liáng",
+  数见不鲜: "shuò jiàn bù xiān",
+};
+
+function getWordPinyin(word: string) {
+  return PINYIN_OVERRIDES[word] ?? pinyin(word, {
+    toneType: "symbol",
+    type: "array",
+    toneSandhi: false,
+  }).join(" ");
+}
+
+function buildVocabGroups(entries: RawVocabEntry[]): VocabGroup[] {
+  const groups = new Map<string, VocabGroup>();
+  const groupCategories = new Map<string, Set<string>>();
+
+  entries.forEach((entry, index) => {
+    const groupKey = [
+      entry.volume,
+      entry.kind,
+      entry.group_no_raw ?? "unknown",
+      entry.group_name ?? "词汇辨析",
+    ].join("-");
+    const category = entry.sub_category ?? undefined;
+
+    if (!groups.has(groupKey)) {
+      groups.set(groupKey, {
+        id: groupKey,
+        title: makeGroupTitle(entry),
+        type: entry.kind,
+        description: "",
+        examHint: "",
+        masteredCount: 0,
+        words: [],
+      });
+      groupCategories.set(groupKey, new Set<string>());
+    }
+
+    const group = groups.get(groupKey)!;
+    if (category) {
+      groupCategories.get(groupKey)!.add(category);
+    }
+    group.words.push({
+      id: `${groupKey}-${index}`,
+      word: entry.word,
+      pinyin: getWordPinyin(entry.word),
+      partOfSpeech: entry.kind,
+      tags: category ? [entry.volume, category] : [entry.volume],
+      definition: entry.meaning || entry.examples[0] || "暂无释义",
+      example: entry.examples[0] || "暂无例句",
+      source: getEntrySource(entry),
+    });
+  });
+
+  return Array.from(groups.entries()).map(([groupKey, group]) => {
+    const categories = Array.from(groupCategories.get(groupKey) ?? []);
+    const previewWords = group.words.slice(0, 6).map((word) => word.word).join("、");
+    return {
+      ...group,
+      type: `${group.type} · ${categories.length} 类`,
+      description: categories.slice(0, 4).join("、"),
+      examHint: `${group.title.replace(/^第.+?组 · /, "")}：${previewWords}`,
+    };
+  });
+}
+
+function getTodayKey() {
+  return formatDateKey(new Date());
+}
+
+function formatDateKey(date: Date) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
+function addDays(dateKey: string, offset: number) {
+  const date = new Date(`${dateKey}T00:00:00`);
+  date.setDate(date.getDate() + offset);
+  return formatDateKey(date);
+}
+
+function formatDateLabel(dateKey: string) {
+  const date = new Date(`${dateKey}T00:00:00`);
+  return `${date.getMonth() + 1}月${date.getDate()}日`;
+}
+
+function hashDateKey(dateKey: string) {
+  return dateKey.split("").reduce((sum, char) => sum + char.charCodeAt(0), 0);
+}
+
+function getDailyGroups(groups: VocabGroup[], dateKey: string, count: number) {
+  if (groups.length === 0) return [];
+  const start = hashDateKey(dateKey) % groups.length;
+  return Array.from({ length: Math.min(count, groups.length) }, (_, index) => (
+    groups[(start + index) % groups.length]
+  ));
 }
 
 const vocabGroups: VocabGroup[] = [
@@ -170,112 +303,92 @@ function TagPill({ label, tone = "blue" }: { label: string; tone?: "blue" | "gol
   );
 }
 
-function MiniVocabCard({
-  item,
-  index,
-}: {
-  item: VocabItem;
-  index: number;
-}) {
-  const transforms = [
-    "translateY(0px) scale(1)",
-    "translateY(12px) scale(0.955)",
-    "translateY(24px) scale(0.91)",
-  ];
-  const opacity = [1, 0.74, 0.48][index] ?? 0.4;
+type VocabGroupStatus = "未开始" | "已打开" | "已进入复盘";
 
-  return (
-    <div
-      className="absolute left-0 right-0 rounded-[18px] bg-white p-[16px]"
-      style={{
-        top: 0,
-        zIndex: 10 - index,
-        opacity,
-        transform: transforms[index] ?? transforms[2],
-        boxShadow:
-          index === 0
-            ? "0 14px 32px rgba(27,45,79,0.11), 0 0 0 0.833px rgba(27,45,79,0.07)"
-            : "0 10px 24px rgba(27,45,79,0.08), 0 0 0 0.833px rgba(27,45,79,0.05)",
-      }}
-    >
-      <div className="mb-[8px] flex items-start justify-between gap-[10px]">
-        <div>
-          <p className="font-['Noto_Sans_SC:Bold',sans-serif] text-[20px] font-bold leading-[25px] tracking-[-0.3px] text-[#1B2D4F]">
-            {item.word}
-          </p>
-          {item.pinyin && (
-            <p className="mt-[2px] font-['Noto_Sans_SC:Regular',sans-serif] text-[11.5px] tracking-[0.45px] text-[#7A8FA6]">
-              {item.pinyin}
-            </p>
-          )}
-        </div>
-        <TagPill label={item.partOfSpeech} />
-      </div>
-      <p className="line-clamp-2 font-['Noto_Sans_SC:Regular',sans-serif] text-[13px] leading-[21px] text-[#53697f]">
-        {item.definition}
-      </p>
-    </div>
-  );
-}
-
-function VocabStackCard({
+function VocabGroupCard({
   group,
+  status,
   onOpen,
 }: {
   group: VocabGroup;
+  status: VocabGroupStatus;
   onOpen: () => void;
 }) {
-  const progress = Math.round((group.masteredCount / group.words.length) * 100);
+  const previewWords = group.words.slice(0, 5);
+  const statusTone = {
+    未开始: {
+      color: "var(--app-muted)",
+      bg: "var(--app-paper)",
+      label: "未开始",
+    },
+    已打开: {
+      color: "var(--app-amber)",
+      bg: "var(--app-amber-soft)",
+      label: "已打开",
+    },
+    已进入复盘: {
+      color: "var(--app-green)",
+      bg: "var(--app-green-soft)",
+      label: "已进入复盘",
+    },
+  }[status];
 
   return (
     <button
       onClick={onOpen}
-      className="vocab-stack-pressable relative mx-4 mb-6 block w-[calc(100%-32px)] text-left"
+      className="vocab-stack-pressable mx-4 mb-3 block w-[calc(100%-32px)] rounded-[var(--app-radius-card)] bg-[var(--app-surface)] p-[15px] text-left"
+      style={{
+        border: "1px solid rgba(30,58,95,0.07)",
+        boxShadow: "var(--app-shadow-hairline)",
+      }}
       aria-label={`打开${group.title}`}
     >
-      <div className="mb-[10px] flex items-center justify-between px-[2px]">
-        <div className="flex items-center gap-[8px]">
-          <span className="flex h-[28px] w-[28px] items-center justify-center rounded-[9px] bg-[#eef3ff]">
-            <Layers3 size={15} color="#1E3A5F" strokeWidth={1.9} />
-          </span>
-          <div>
-            <p className="font-['Noto_Sans_SC:Bold',sans-serif] text-[16px] font-bold text-[#1B2D4F]">
+      <div className="flex items-start justify-between gap-[12px]">
+        <div className="min-w-0">
+          <div className="flex items-center gap-[8px]">
+            <span className="flex h-[28px] w-[28px] shrink-0 items-center justify-center rounded-[9px] bg-[var(--app-navy-soft)]">
+              <Layers3 size={15} color="var(--app-navy)" strokeWidth={1.9} />
+            </span>
+            <p className="truncate text-[16px] font-bold leading-[23px] text-[var(--app-ink)]">
               {group.title}
             </p>
-            <p className="font-['Noto_Sans_SC:Regular',sans-serif] text-[11px] text-[#8da0b4]">
-              {group.words.length} 张词卡 · {group.type}
-            </p>
           </div>
+          <p className="mt-[6px] text-[12px] leading-[18px] text-[var(--app-muted)]">
+            {group.type} · {group.words.length} 个词
+          </p>
         </div>
-        <ChevronRight size={17} color="#9BAABB" strokeWidth={2} />
+
+        <span
+          className="shrink-0 rounded-full px-[8px] py-[4px] text-[11px] font-medium leading-[15px]"
+          style={{ color: statusTone.color, backgroundColor: statusTone.bg }}
+        >
+          {statusTone.label}
+        </span>
       </div>
 
-      <div className="relative h-[150px]">
-        {group.words.slice(0, 3).map((item, index) => (
-          <MiniVocabCard key={item.id} item={item} index={index} />
+      {group.description && (
+        <p className="app-text-pretty mt-[10px] line-clamp-2 text-[12.5px] leading-[20px] text-[var(--app-body)]">
+          {group.description}
+        </p>
+      )}
+
+      <div className="mt-[13px] flex flex-wrap gap-[7px]">
+        {previewWords.map((item) => (
+          <span
+            key={item.id}
+            className="rounded-[10px] bg-[var(--app-paper)] px-[9px] py-[6px] text-[13px] font-medium leading-[18px] text-[var(--app-ink)]"
+            style={{ boxShadow: "inset 0 0 0 1px rgba(30,58,95,0.06)" }}
+          >
+            {item.word}
+          </span>
         ))}
       </div>
 
-      <div
-        className="relative mt-[8px] rounded-[14px] bg-[#f7f9fc] px-[13px] py-[11px]"
-        style={{ boxShadow: "0 0 0 0.833px rgba(27,45,79,0.04)" }}
-      >
-        <p className="mb-[6px] font-['Noto_Sans_SC:Medium',sans-serif] text-[12px] font-medium text-[#7a8fa6]">
-          辨析提醒
-        </p>
-        <p className="font-['Noto_Sans_SC:Regular',sans-serif] text-[12.5px] leading-[20px] text-[#40566d]">
+      <div className="mt-[13px] flex items-center justify-between gap-[12px] border-t border-[rgba(30,58,95,0.07)] pt-[11px]">
+        <p className="line-clamp-1 text-[12px] leading-[18px] text-[var(--app-muted)]">
           {group.examHint}
         </p>
-        <div className="mt-[10px] flex items-center justify-between">
-          <span className="font-['Noto_Sans_SC:Regular',sans-serif] text-[12px] text-[#8da0b4]">
-            已掌握 {group.masteredCount}/{group.words.length}
-          </span>
-          <div className="flex items-center gap-[7px]">
-            <div className="h-[4px] w-[66px] overflow-hidden rounded-full bg-[#e4e9f0]">
-              <div className="h-full rounded-full bg-[#1E3A5F]" style={{ width: `${progress}%` }} />
-            </div>
-          </div>
-        </div>
+        <ChevronRight size={17} color="var(--app-faint)" strokeWidth={2} />
       </div>
     </button>
   );
@@ -308,12 +421,18 @@ function ModalStackPreview({
     </div>
   );
 }
-function VocabDetailCard({ item }: { item: VocabItem }) {
+function VocabDetailCard({
+  item,
+  examHint,
+}: {
+  item: VocabItem;
+  examHint: string;
+}) {
   const [added, setAdded] = useState(false);
 
   return (
     <div
-      className="min-h-[360px] rounded-[22px] bg-white p-[18px]"
+      className="no-scrollbar max-h-[560px] min-h-[360px] overflow-y-auto rounded-[22px] bg-white p-[18px]"
       style={{
         boxShadow: "0 18px 42px rgba(27,45,79,0.16), 0 0 0 0.833px rgba(27,45,79,0.06)",
       }}
@@ -371,6 +490,15 @@ function VocabDetailCard({ item }: { item: VocabItem }) {
         </p>
         <p className="font-['Noto_Sans_SC:Regular',sans-serif] text-[13.5px] leading-[23px] text-[#4A6070]">
           {item.example}
+        </p>
+      </div>
+
+      <div className="mt-[14px] rounded-[16px] bg-[#f7f9fc] p-[14px]">
+        <p className="mb-[6px] font-['Noto_Sans_SC:Bold',sans-serif] text-[12px] font-bold text-[#7A8FA6]">
+          辨析提醒
+        </p>
+        <p className="font-['Noto_Sans_SC:Regular',sans-serif] text-[13px] leading-[22px] text-[#4A6070]">
+          {examHint}
         </p>
       </div>
 
@@ -448,7 +576,7 @@ function VocabGroupSheet({
                 exit={{ opacity: 0, x: -24, rotate: -1.2 }}
                 transition={{ duration: 0.22, ease: "easeOut" }}
             >
-              <VocabDetailCard item={activeItem} />
+              <VocabDetailCard item={activeItem} examHint={group.examHint} />
             </motion.div>
           </AnimatePresence>
 
@@ -490,48 +618,270 @@ function VocabGroupSheet({
   );
 }
 
+function VocabSettingsSheet({
+  dailyGroupCount,
+  onChange,
+  onClose,
+}: {
+  dailyGroupCount: number;
+  onChange: (count: number) => void;
+  onClose: () => void;
+}) {
+  const options = [1, 2, 3, 4, 5, 6];
+
+  return (
+    <motion.div
+      className="absolute inset-0 z-[90] flex items-end bg-[rgba(10,18,30,0.32)] px-[14px] pb-[104px]"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.16, ease: "easeOut" }}
+      onClick={onClose}
+    >
+      <motion.div
+        className="w-full rounded-[24px] bg-white p-[16px]"
+        style={{ boxShadow: "0 22px 56px rgba(4,16,32,0.2)" }}
+        initial={{ y: 24, scale: 0.98 }}
+        animate={{ y: 0, scale: 1 }}
+        exit={{ y: 24, scale: 0.98 }}
+        transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
+        onClick={(event) => event.stopPropagation()}
+      >
+        <div className="mb-[14px] flex items-center justify-between">
+          <div>
+            <p className="font-['Noto_Sans_SC:Bold',sans-serif] text-[17px] font-bold text-[#1B2D4F]">
+              今日词汇设置
+            </p>
+            <p className="mt-[3px] font-['Noto_Sans_SC:Regular',sans-serif] text-[12px] text-[#8da0b4]">
+              设置每天自动推送的词汇组数
+            </p>
+          </div>
+          <button
+            onClick={onClose}
+            className="flex h-[32px] w-[32px] items-center justify-center rounded-full bg-[#f2f6fb]"
+            aria-label="关闭设置"
+          >
+            <X size={16} color="#52677E" strokeWidth={2} />
+          </button>
+        </div>
+
+        <div className="grid grid-cols-3 gap-[8px]">
+          {options.map((count) => {
+            const active = dailyGroupCount === count;
+            return (
+              <button
+                key={count}
+                onClick={() => onChange(count)}
+                className="rounded-[14px] px-[10px] py-[12px] text-center"
+                style={{
+                  backgroundColor: active ? "#1E3A5F" : "#f4f7fb",
+                  color: active ? "#fff" : "#40566d",
+                  boxShadow: active ? "0 8px 18px rgba(30,58,95,0.18)" : "0 0 0 0.833px rgba(27,45,79,0.04)",
+                }}
+              >
+                <span className="font-['Noto_Sans_SC:Bold',sans-serif] text-[18px] font-bold">
+                  {count}
+                </span>
+                <span className="ml-[3px] font-['Noto_Sans_SC:Regular',sans-serif] text-[12px]">
+                  组
+                </span>
+              </button>
+            );
+          })}
+        </div>
+
+        <p className="mt-[12px] rounded-[14px] bg-[#f7f9fc] px-[12px] py-[10px] font-['Noto_Sans_SC:Regular',sans-serif] text-[12px] leading-[20px] text-[#6b7e94]">
+          调整后，今日页会只展示对应数量的词汇组；完整词库仍保留在本地数据里，后面可以接错题库或复盘页。
+        </p>
+      </motion.div>
+    </motion.div>
+  );
+}
+
+function VocabCalendarSheet({
+  todayKey,
+  selectedDateKey,
+  dailyGroupCount,
+  allGroups,
+  onSelectDate,
+  onClose,
+}: {
+  todayKey: string;
+  selectedDateKey: string;
+  dailyGroupCount: number;
+  allGroups: VocabGroup[];
+  onSelectDate: (dateKey: string) => void;
+  onClose: () => void;
+}) {
+  const days = Array.from({ length: 14 }, (_, index) => addDays(todayKey, -index));
+
+  return (
+    <motion.div
+      className="absolute inset-0 z-[90] flex items-end bg-[rgba(10,18,30,0.32)] px-[14px] pb-[104px]"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.16, ease: "easeOut" }}
+      onClick={onClose}
+    >
+      <motion.div
+        className="no-scrollbar max-h-[560px] w-full overflow-y-auto rounded-[24px] bg-white p-[16px]"
+        style={{ boxShadow: "0 22px 56px rgba(4,16,32,0.2)" }}
+        initial={{ y: 24, scale: 0.98 }}
+        animate={{ y: 0, scale: 1 }}
+        exit={{ y: 24, scale: 0.98 }}
+        transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
+        onClick={(event) => event.stopPropagation()}
+      >
+        <div className="mb-[14px] flex items-center justify-between">
+          <div>
+            <p className="font-['Noto_Sans_SC:Bold',sans-serif] text-[17px] font-bold text-[#1B2D4F]">
+              词汇日历
+            </p>
+            <p className="mt-[3px] font-['Noto_Sans_SC:Regular',sans-serif] text-[12px] text-[#8da0b4]">
+              回看最近 14 天的每日词汇
+            </p>
+          </div>
+          <button
+            onClick={onClose}
+            className="flex h-[32px] w-[32px] items-center justify-center rounded-full bg-[#f2f6fb]"
+            aria-label="关闭日历"
+          >
+            <X size={16} color="#52677E" strokeWidth={2} />
+          </button>
+        </div>
+
+        <div className="space-y-[8px]">
+          {days.map((dateKey) => {
+            const groups = getDailyGroups(allGroups, dateKey, dailyGroupCount);
+            const wordsCount = groups.reduce((sum, group) => sum + group.words.length, 0);
+            const selected = selectedDateKey === dateKey;
+            return (
+              <button
+                key={dateKey}
+                onClick={() => {
+                  onSelectDate(dateKey);
+                  onClose();
+                }}
+                className="block w-full rounded-[16px] px-[12px] py-[11px] text-left"
+                style={{
+                  backgroundColor: selected ? "#EEF3FF" : "#f7f9fc",
+                  boxShadow: selected
+                    ? "0 0 0 1px rgba(43,95,191,0.18)"
+                    : "0 0 0 0.833px rgba(27,45,79,0.04)",
+                }}
+              >
+                <div className="flex items-center justify-between gap-[10px]">
+                  <div>
+                    <p className="font-['Noto_Sans_SC:Bold',sans-serif] text-[14px] font-bold text-[#1B2D4F]">
+                      {dateKey === todayKey ? "今天" : formatDateLabel(dateKey)}
+                    </p>
+                    <p className="mt-[3px] line-clamp-1 font-['Noto_Sans_SC:Regular',sans-serif] text-[12px] text-[#6b7e94]">
+                      {groups.map((group) => group.title.replace(/^第.+?组 · /, "")).join("、")}
+                    </p>
+                  </div>
+                  <span className="shrink-0 rounded-[9px] bg-white px-[8px] py-[4px] font-['Noto_Sans_SC:Medium',sans-serif] text-[11px] font-medium text-[#7A8FA6]">
+                    {groups.length} 组 · {wordsCount} 词
+                  </span>
+                </div>
+              </button>
+            );
+          })}
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+}
+
 export function VocabTab() {
+  const extractedGroups = useMemo(
+    () => buildVocabGroups(vocabularyEntries as RawVocabEntry[]),
+    [],
+  );
+  const allGroups = extractedGroups.length > 0 ? extractedGroups : vocabGroups;
+  const todayKey = useMemo(() => getTodayKey(), []);
+  const [dailyGroupCount, setDailyGroupCount] = useState(3);
+  const [selectedDateKey, setSelectedDateKey] = useState(todayKey);
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const [calendarOpen, setCalendarOpen] = useState(false);
+  const [openedGroupIds, setOpenedGroupIds] = useState<Set<string>>(new Set());
+
+  useEffect(() => {
+    const openCalendar = () => setCalendarOpen(true);
+    const openSettings = () => setSettingsOpen(true);
+
+    window.addEventListener(VOCAB_OPEN_CALENDAR_EVENT, openCalendar);
+    window.addEventListener(VOCAB_OPEN_SETTINGS_EVENT, openSettings);
+
+    return () => {
+      window.removeEventListener(VOCAB_OPEN_CALENDAR_EVENT, openCalendar);
+      window.removeEventListener(VOCAB_OPEN_SETTINGS_EVENT, openSettings);
+    };
+  }, []);
+
+  const displayGroups = useMemo(
+    () => getDailyGroups(allGroups, selectedDateKey, dailyGroupCount),
+    [allGroups, dailyGroupCount, selectedDateKey],
+  );
+  const totalWords = displayGroups.reduce((sum, group) => sum + group.words.length, 0);
   const [selectedGroupId, setSelectedGroupId] = useState<string | null>(null);
   const selectedGroup = useMemo(
-    () => vocabGroups.find((group) => group.id === selectedGroupId) ?? null,
-    [selectedGroupId],
+    () => displayGroups.find((group) => group.id === selectedGroupId) ?? null,
+    [displayGroups, selectedGroupId],
   );
+
+  const getGroupStatus = (groupId: string, index: number): VocabGroupStatus => {
+    if (openedGroupIds.has(groupId)) return "已进入复盘";
+    if (index === 1) return "已打开";
+    return "未开始";
+  };
+
+  const openGroup = (groupId: string) => {
+    setOpenedGroupIds((current) => new Set(current).add(groupId));
+    setSelectedGroupId(groupId);
+  };
 
   return (
     <div className="pt-1 pb-4">
-      <div className="mx-4 mb-3 flex items-center justify-between">
-        <span style={{ fontSize: 12, color: "#9BAABB" }}>
-          今日 3 组 · 9 个词 · 累计掌握 127 词
-        </span>
-        <div className="flex items-center gap-1.5">
-          <div
-            className="overflow-hidden rounded-full"
-            style={{ width: 72, height: 4, backgroundColor: "#E4E9F0" }}
-          >
-            <div
-              className="h-full rounded-full"
-              style={{ width: "32%", backgroundColor: "#1E3A5F" }}
-            />
-          </div>
-          <span style={{ fontSize: 11, color: "#9BAABB" }}>32%</span>
-        </div>
+      <div className="mx-4 mb-3">
+        <p className="text-[12px] leading-[18px] text-[var(--app-muted)]">
+          {selectedDateKey === todayKey ? "今日" : formatDateLabel(selectedDateKey)}推送 {displayGroups.length} 组 · {totalWords} 个词，点开后进入词汇复习池。
+        </p>
       </div>
 
-      {vocabGroups.map((group) => (
-        <VocabStackCard
+      {displayGroups.map((group, index) => (
+        <VocabGroupCard
           key={group.id}
           group={group}
-          onOpen={() => setSelectedGroupId(group.id)}
+          status={getGroupStatus(group.id, index)}
+          onOpen={() => openGroup(group.id)}
         />
       ))}
 
-      <p className="text-center mt-2" style={{ fontSize: 11, color: "#B8C5D0" }}>
-        成组辨析，减少混淆
+      <p className="mt-2 text-center text-[11px] text-[var(--app-faint)]">
+        成组辨析，默认以“需巩固”进入复盘
       </p>
 
       <AnimatePresence>
         {selectedGroup && (
           <VocabGroupSheet group={selectedGroup} onClose={() => setSelectedGroupId(null)} />
+        )}
+        {settingsOpen && (
+          <VocabSettingsSheet
+            dailyGroupCount={dailyGroupCount}
+            onChange={setDailyGroupCount}
+            onClose={() => setSettingsOpen(false)}
+          />
+        )}
+        {calendarOpen && (
+          <VocabCalendarSheet
+            todayKey={todayKey}
+            selectedDateKey={selectedDateKey}
+            dailyGroupCount={dailyGroupCount}
+            allGroups={allGroups}
+            onSelectDate={setSelectedDateKey}
+            onClose={() => setCalendarOpen(false)}
+          />
         )}
       </AnimatePresence>
     </div>

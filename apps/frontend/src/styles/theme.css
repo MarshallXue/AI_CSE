@@ -2,6 +2,36 @@
 
 :root {
   --font-size: 16px;
+  --app-ink: #172947;
+  --app-body: #3c506a;
+  --app-muted: #728399;
+  --app-faint: #9aaabc;
+  --app-page: #f3f6f9;
+  --app-surface: #ffffff;
+  --app-paper: #fbfcfd;
+  --app-hairline: #dfe7f0;
+  --app-navy: #1e3a5f;
+  --app-navy-strong: #162f50;
+  --app-navy-soft: #eaf1fb;
+  --app-amber: #b77a21;
+  --app-amber-soft: #fbf1dc;
+  --app-green: #2f7a48;
+  --app-green-soft: #e7f3ea;
+  --app-red: #b84a38;
+  --app-red-soft: #fff0ed;
+  --app-blue: #2b5fbf;
+  --app-blue-soft: #edf4ff;
+  --app-radius-control: 10px;
+  --app-radius-card: 14px;
+  --app-radius-panel: 20px;
+  --app-radius-sheet: 28px;
+  --app-radius-tabbar: 24px;
+  --app-shadow-hairline: 0 1px 0 rgba(30, 58, 95, 0.05), 0 0 0 1px rgba(30, 58, 95, 0.06);
+  --app-shadow-card: 0 10px 28px rgba(31, 58, 95, 0.08);
+  --app-shadow-floating: 0 20px 56px rgba(31, 58, 95, 0.16);
+  --app-ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --app-motion-fast: 160ms;
+  --app-motion-base: 220ms;
   --background: #ffffff;
   --foreground: oklch(0.145 0 0);
   --card: #ffffff;
