@@ -18,10 +18,13 @@ import {
   PenLine,
   ClipboardList,
   Download,
-  CheckCircle2,
+  ExternalLink,
+  X,
 } from "lucide-react";
 
 type NavTab = "today" | "wrongbank" | "review" | "profile";
+
+const ORIGINAL_ARTICLE_URL = "https://www.chinanews.com.cn/cj/2026/06-30/10649781.shtml";
 
 // ─── Status Bar ───────────────────────────────────────────────────────────────
 function StatusBar() {
@@ -588,6 +591,129 @@ function ExportSection() {
   );
 }
 
+function OriginalArticleSheet({ onClose }: { onClose: () => void }) {
+  const [loaded, setLoaded] = useState(false);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.18 }}
+      style={{
+        position: "absolute",
+        inset: 0,
+        zIndex: 80,
+        backgroundColor: "#F2F4F8",
+        display: "flex",
+        flexDirection: "column",
+      }}
+      data-testid="original-article-sheet"
+    >
+      <div
+        style={{
+          flexShrink: 0,
+          height: 54,
+          padding: "12px 12px 8px",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          borderBottom: "0.5px solid rgba(0,0,0,0.08)",
+          backgroundColor: "#FFFFFF",
+        }}
+      >
+        <div style={{ minWidth: 0 }}>
+          <p style={{ fontSize: 14, fontWeight: 700, color: "#1B2D4F", lineHeight: 1.2 }}>原文网页</p>
+          <p style={{ fontSize: 11, color: "#8FA0B0", lineHeight: 1.4, marginTop: 2 }}>中新网 · 站内嵌入测试</p>
+        </div>
+        <button
+          onClick={onClose}
+          aria-label="关闭原文"
+          style={{
+            width: 34,
+            height: 34,
+            borderRadius: 17,
+            border: "1px solid #E2E8F0",
+            backgroundColor: "#FFFFFF",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            cursor: "pointer",
+            flexShrink: 0,
+          }}
+        >
+          <X size={17} color="#4A6280" />
+        </button>
+      </div>
+
+      <div style={{ position: "relative", flex: 1, minHeight: 0, backgroundColor: "#FFFFFF" }}>
+        {!loaded && (
+          <div
+            style={{
+              position: "absolute",
+              inset: 0,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              flexDirection: "column",
+              gap: 8,
+              color: "#6B8099",
+              backgroundColor: "#FFFFFF",
+            }}
+            data-testid="original-article-loading"
+          >
+            <ExternalLink size={20} color="#8FA3B8" />
+            <span style={{ fontSize: 13 }}>正在加载原文网页</span>
+          </div>
+        )}
+        <iframe
+          title="中新网原文"
+          src={ORIGINAL_ARTICLE_URL}
+          onLoad={() => setLoaded(true)}
+          data-testid="original-article-frame"
+          style={{
+            width: "100%",
+            height: "100%",
+            border: "none",
+            backgroundColor: "#FFFFFF",
+          }}
+        />
+      </div>
+
+      <div
+        style={{
+          flexShrink: 0,
+          padding: "8px 14px 12px",
+          backgroundColor: "#FFFFFF",
+          borderTop: "0.5px solid rgba(0,0,0,0.08)",
+        }}
+      >
+        <a
+          href={ORIGINAL_ARTICLE_URL}
+          target="_blank"
+          rel="noreferrer"
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 6,
+            height: 36,
+            borderRadius: 10,
+            backgroundColor: "#EEF3FF",
+            color: "#1F5EFF",
+            fontSize: 13,
+            fontWeight: 600,
+            textDecoration: "none",
+          }}
+        >
+          <ExternalLink size={14} color="#1F5EFF" />
+          浏览器打开
+        </a>
+      </div>
+    </motion.div>
+  );
+}
+
 // ─── AI Input Bar ─────────────────────────────────────────────────────────────
 function AIInputBar() {
   const [query, setQuery] = useState("");
@@ -813,6 +939,8 @@ export function NewsDetailScreen({
   onBack: () => void;
   onTabChange?: (tab: NavTab) => void;
 }) {
+  const [originalOpen, setOriginalOpen] = useState(false);
+
   return (
     <div style={{ position: "relative", height: "100%", backgroundColor: "#F2F4F8", overflow: "hidden", display: "flex", flexDirection: "column" }}>
       <StatusBar />
@@ -855,15 +983,39 @@ export function NewsDetailScreen({
         </h1>
 
         {/* Meta */}
-        <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
-            <div style={{ width: 4, height: 4, borderRadius: "50%", backgroundColor: "#B0BEC8" }} />
-            <span style={{ fontSize: 12, color: "#8FA0B0" }}>预计阅读 3 分钟</span>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 14, minWidth: 0, flexWrap: "wrap" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
+              <div style={{ width: 4, height: 4, borderRadius: "50%", backgroundColor: "#B0BEC8" }} />
+              <span style={{ fontSize: 12, color: "#8FA0B0" }}>预计阅读 3 分钟</span>
+            </div>
+            <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
+              <div style={{ width: 4, height: 4, borderRadius: "50%", backgroundColor: "#B0BEC8" }} />
+              <span style={{ fontSize: 12, color: "#8FA0B0" }}>官方材料精读</span>
+            </div>
           </div>
-          <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
-            <div style={{ width: 4, height: 4, borderRadius: "50%", backgroundColor: "#B0BEC8" }} />
-            <span style={{ fontSize: 12, color: "#8FA0B0" }}>官方材料精读</span>
-          </div>
+          <button
+            onClick={() => setOriginalOpen(true)}
+            data-testid="open-original-article"
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 5,
+              height: 30,
+              padding: "0 11px",
+              borderRadius: 15,
+              border: "1px solid #DCE6F5",
+              backgroundColor: "#F7FAFF",
+              color: "#1F5EFF",
+              fontSize: 12,
+              fontWeight: 600,
+              cursor: "pointer",
+              flexShrink: 0,
+            }}
+          >
+            <ExternalLink size={13} color="#1F5EFF" />
+            原文
+          </button>
         </div>
       </div>
 
@@ -955,6 +1107,7 @@ export function NewsDetailScreen({
 
       <AIInputBar />
       <TabBar onTabChange={onTabChange} />
+      <AnimatePresence>{originalOpen && <OriginalArticleSheet onClose={() => setOriginalOpen(false)} />}</AnimatePresence>
     </div>
   );
 }

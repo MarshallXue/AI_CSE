@@ -2,6 +2,7 @@ node_modules/
 dist/
 .vite/
 .mastra/
+apps/agent/.mastra/
 
 *.log
 vite-dev.*.log
@@ -14,6 +15,26 @@ mastra_agent/src/mastra/public/*.db
 mastra_agent/src/mastra/public/*.db-*
 mastra_agent/src/mastra/public/*.duckdb
 mastra_agent/src/mastra/public/*.duckdb.*
+apps/agent/src/mastra/public/*.db
+apps/agent/src/mastra/public/*.db-*
+apps/agent/src/mastra/public/*.duckdb
+apps/agent/src/mastra/public/*.duckdb.*
+.data/agent/
+
+# Large source data
+data/raw/**/*.pdf
+words/**/*.pdf
+
+# Reproducible generated data
+data/generated/**
+!data/generated/
+!data/generated/README.md
+words/parsed/
+
+# Local caches
+.cache/
+.temp/
+tmp/
 
 .DS_Store
 Thumbs.db

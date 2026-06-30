@@ -1,51 +1,38 @@
 import { useState } from "react";
-import { Bookmark, Clock, ChevronRight } from "lucide-react";
-import img0 from "../../imports/economic-policy.jpg";
-import img1 from "../../imports/digital-infrastructure.jpg";
+import { Bookmark, ChevronRight, Clock } from "lucide-react";
 
 interface NewsItem {
   id: string;
   category: string;
-  categoryColor: string;
-  categoryBg: string;
   title: string;
   summary: string;
   examTag: string;
   readTime: number;
   isHot?: boolean;
   saved?: boolean;
-  image?: string;
 }
 
 const newsData: NewsItem[] = [
   {
     id: "1",
     category: "经济政策",
-    categoryColor: "#2B5FBF",
-    categoryBg: "#EEF3FF",
     title: "中央经济工作会议部署下半年重点任务",
     summary: "着力扩内需、稳外贸、深化供给侧结构性改革，新质生产力成为核心关键词，强调以科技创新驱动产业升级。",
     examTag: "宏观调控 · 新质生产力",
     readTime: 4,
     isHot: true,
-    image: img0,
   },
   {
     id: "2",
     category: "数字经济",
-    categoryColor: "#1E7A6A",
-    categoryBg: "#E6F5F2",
     title: "国务院印发《数字中国建设整体布局规划（2026年版）》",
     summary: "明确到2030年数字基础设施全面升级、数据要素市场基本建成的核心建设目标与路径。",
     examTag: "数字中国战略",
     readTime: 3,
-    image: img1,
   },
   {
     id: "3",
     category: "三农政策",
-    categoryColor: "#2E7A3C",
-    categoryBg: "#EAF5EC",
     title: "农业农村部：夏粮丰收在望，粮食安全形势持续向好",
     summary: "多地夏粮产量创历史新高，农业科技赋能效果显著，耕地保护红线严守政策落实到位。",
     examTag: "粮食安全 · 乡村振兴",
@@ -54,8 +41,6 @@ const newsData: NewsItem[] = [
   {
     id: "4",
     category: "生态文明",
-    categoryColor: "#5E7A1A",
-    categoryBg: "#F1F6E4",
     title: "生态环境部：全国碳市场扩容，钢铁建材等行业纳入",
     summary: "碳市场第三履约期正式启动，钢铁、建材、有色金属行业企业将参与配额交易，推动双碳目标落实。",
     examTag: "碳达峰 · 双碳目标",
@@ -63,176 +48,125 @@ const newsData: NewsItem[] = [
   },
 ];
 
-function NewsCard({ item, onOpenDetail }: { item: NewsItem; onOpenDetail?: () => void }) {
+function NewsCard({
+  item,
+  opened,
+  onOpen,
+}: {
+  item: NewsItem;
+  opened: boolean;
+  onOpen: () => void;
+}) {
   const [saved, setSaved] = useState(item.saved ?? false);
 
   return (
-    <div
-      className="bg-white rounded-xl mx-4 mb-3"
+    <article
+      className="app-pressable mx-4 mb-3 overflow-hidden rounded-[var(--app-radius-card)] bg-[var(--app-surface)]"
       style={{
-        borderRadius: 12,
-        boxShadow: "0 1px 6px rgba(0,0,0,0.05), 0 0 0 0.5px rgba(0,0,0,0.05)",
-        overflow: "hidden",
+        border: "1px solid rgba(30,58,95,0.07)",
+        boxShadow: "var(--app-shadow-hairline)",
       }}
     >
-      {item.image && (
-        <img
-          src={item.image}
-          alt={item.title}
-          style={{
-            width: "100%",
-            height: 148,
-            objectFit: "cover",
-            display: "block",
-          }}
-        />
-      )}
-      <div className="p-4">
-        {/* Top row */}
-        <div className="flex items-center justify-between mb-2.5">
-          <div className="flex items-center gap-2">
-            <span
-              className="px-2 py-0.5 rounded-md"
-              style={{
-                fontSize: 11,
-                fontWeight: 500,
-                color: item.categoryColor,
-                backgroundColor: item.categoryBg,
-                letterSpacing: 0.2,
-              }}
-            >
+      <div className="p-[16px]">
+        <div className="mb-[10px] flex items-center justify-between">
+          <div className="flex items-center gap-[8px]">
+            <span className="text-[11.5px] font-medium leading-[18px] text-[var(--app-muted)]">
               {item.category}
             </span>
             {item.isHot && (
-              <span
-                style={{
-                  fontSize: 10,
-                  fontWeight: 600,
-                  color: "#C84B2F",
-                  backgroundColor: "#FEF0EC",
-                  padding: "1px 7px",
-                  borderRadius: 4,
-                  letterSpacing: 0.3,
-                }}
-              >
-                热点
+              <span className="rounded-full bg-[var(--app-amber-soft)] px-[7px] py-[2px] text-[10.5px] font-medium leading-[15px] text-[var(--app-amber)]">
+                高频考点
               </span>
             )}
           </div>
           <button
             onClick={() => setSaved(!saved)}
-            className="p-1"
-            style={{ opacity: 0.7 }}
+            className="app-pressable flex h-[30px] w-[30px] items-center justify-center rounded-full"
+            style={{ backgroundColor: saved ? "var(--app-navy-soft)" : "transparent" }}
+            aria-label={saved ? "取消收藏新闻" : "收藏新闻"}
           >
             <Bookmark
               size={16}
-              color={saved ? "#1E3A5F" : "#B0BEC8"}
-              fill={saved ? "#1E3A5F" : "none"}
+              color={saved ? "var(--app-navy)" : "var(--app-faint)"}
+              fill={saved ? "var(--app-navy)" : "none"}
             />
           </button>
         </div>
 
-        {/* Title */}
-        <p
-          style={{
-            fontSize: 15,
-            fontWeight: 600,
-            color: "#1B2D4F",
-            lineHeight: 1.45,
-            marginBottom: 8,
-            letterSpacing: -0.2,
-          }}
-        >
+        <p className="app-text-pretty mb-[8px] text-[15px] font-bold leading-[22px] tracking-[-0.1px] text-[var(--app-ink)]">
           {item.title}
         </p>
 
-        {/* Summary */}
-        <p
-          style={{
-            fontSize: 13,
-            color: "#6B7E94",
-            lineHeight: 1.6,
-            marginBottom: 12,
-          }}
-        >
+        <p className="app-text-pretty mb-[12px] text-[13px] leading-[22px] text-[var(--app-body)]">
           {item.summary}
         </p>
 
-        {/* Bottom row */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-1.5">
-            <div
-              className="w-1 h-1 rounded-full"
-              style={{ backgroundColor: "#C09A30" }}
-            />
-            <span
-              style={{
-                fontSize: 11,
-                color: "#8A6A10",
-                backgroundColor: "#FBF4E0",
-                padding: "2px 7px",
-                borderRadius: 4,
-                fontWeight: 500,
-              }}
-            >
-              考点：{item.examTag}
+        <div className="flex items-center justify-between gap-[12px]">
+          <p className="min-w-0 text-[12px] leading-[18px] text-[var(--app-muted)]">
+            <span className="font-medium text-[var(--app-body)]">考点</span>
+            <span className="ml-[6px]">{item.examTag}</span>
+          </p>
+          <div className="flex shrink-0 items-center gap-[4px]">
+            <Clock size={12} color="var(--app-faint)" />
+            <span className="text-[11px] leading-[16px] text-[var(--app-faint)]">
+              {item.readTime}分钟
             </span>
-          </div>
-          <div className="flex items-center gap-1">
-            <Clock size={12} color="#B0BEC8" />
-            <span style={{ fontSize: 11, color: "#B0BEC8" }}>{item.readTime}分钟</span>
           </div>
         </div>
       </div>
 
-      {/* Read button */}
       <button
-        onClick={() => onOpenDetail?.()}
-        className="flex items-center justify-between px-4 py-2.5 w-full"
+        onClick={onOpen}
+        className="flex w-full items-center justify-between px-[16px] py-[10px] text-left"
         style={{
-          borderTop: "0.5px solid rgba(0,0,0,0.06)",
-          backgroundColor: "#FAFBFC",
           border: "none",
+          borderTop: "1px solid rgba(30,58,95,0.06)",
+          backgroundColor: opened ? "var(--app-navy-soft)" : "var(--app-paper)",
+          borderRadius: "0 0 var(--app-radius-card) var(--app-radius-card)",
           cursor: "pointer",
-          borderRadius: "0 0 12px 12px",
         }}
       >
-        <span style={{ fontSize: 12, color: "#8FA0B0" }}>精读全文，AI 解析考点</span>
-        <ChevronRight size={14} color="#B0BEC8" />
+        <span
+          className="text-[12px] leading-[18px]"
+          style={{
+            color: opened ? "var(--app-navy)" : "var(--app-muted)",
+            fontWeight: opened ? 600 : 500,
+          }}
+        >
+          {opened ? "已精读 · 时政考点待复盘" : "精读全文，AI 解析考点"}
+        </span>
+        <ChevronRight size={14} color={opened ? "var(--app-navy)" : "var(--app-faint)"} />
       </button>
-    </div>
+    </article>
   );
 }
 
 export function NewsTab({ onOpenDetail }: { onOpenDetail?: () => void }) {
+  const [openedIds, setOpenedIds] = useState<Set<string>>(new Set());
+
+  const openNews = (id: string) => {
+    setOpenedIds((current) => new Set(current).add(id));
+    onOpenDetail?.();
+  };
+
   return (
     <div className="pt-1 pb-4">
-      {/* Progress hint */}
-      <div className="mx-4 mb-3 flex items-center justify-between">
-        <span style={{ fontSize: 12, color: "#9BAABB" }}>今日 4 篇 · 已读 0 篇</span>
-        <div className="flex items-center gap-1.5">
-          <div
-            className="rounded-full overflow-hidden"
-            style={{ width: 72, height: 4, backgroundColor: "#E4E9F0" }}
-          >
-            <div
-              className="h-full rounded-full"
-              style={{ width: "0%", backgroundColor: "#1E3A5F" }}
-            />
-          </div>
-          <span style={{ fontSize: 11, color: "#9BAABB" }}>0%</span>
-        </div>
+      <div className="mx-4 mb-3">
+        <p className="text-[12px] leading-[18px] text-[var(--app-muted)]">
+          轻读要点，必要时再进入全文解析。
+        </p>
       </div>
 
       {newsData.map((item) => (
-        <NewsCard key={item.id} item={item} onOpenDetail={onOpenDetail} />
+        <NewsCard
+          key={item.id}
+          item={item}
+          opened={openedIds.has(item.id)}
+          onOpen={() => openNews(item.id)}
+        />
       ))}
 
-      {/* Bottom hint */}
-      <p
-        className="text-center mt-2 mb-2"
-        style={{ fontSize: 11, color: "#B8C5D0" }}
-      >
+      <p className="mt-2 mb-2 text-center text-[11px] text-[var(--app-faint)]">
         每日 04:00 更新
       </p>
     </div>

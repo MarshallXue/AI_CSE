@@ -1,0 +1,1101 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>岸岸通 UI 原型板 v2</title>
+  <style>
+    :root {
+      --ink: #13243a;
+      --body: #43556c;
+      --muted: #8392a5;
+      --hairline: rgba(33, 52, 76, 0.1);
+      --page: #eef3f7;
+      --surface: #fbfcfe;
+      --paper: #fffdf8;
+      --navy: #183456;
+      --navy-soft: #e8eef6;
+      --amber: #aa7118;
+      --amber-soft: #fff2d8;
+      --green: #2f725f;
+      --green-soft: #e7f3ee;
+      --red: #a94d42;
+      --red-soft: #f8e8e5;
+      --shadow-soft: 0 18px 48px rgba(31, 51, 78, 0.12);
+      --shadow-card: 0 10px 28px rgba(31, 51, 78, 0.08);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+      background:
+        radial-gradient(circle at 8% 0%, rgba(255,255,255,0.95), transparent 30%),
+        radial-gradient(circle at 90% 8%, rgba(210,224,238,0.8), transparent 32%),
+        linear-gradient(135deg, #e5edf4, #f8fafc 48%, #e9f0f6);
+    }
+
+    .page {
+      max-width: 1480px;
+      margin: 0 auto;
+      padding: 42px 28px 72px;
+    }
+
+    .intro {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 22px;
+      align-items: end;
+      margin-bottom: 28px;
+    }
+
+    h1, h2, h3, p { margin: 0; }
+
+    h1 {
+      font-size: 34px;
+      line-height: 1.12;
+      letter-spacing: 0;
+      text-wrap: balance;
+    }
+
+    .intro p {
+      margin-top: 10px;
+      max-width: 720px;
+      color: var(--body);
+      font-size: 14px;
+      line-height: 1.7;
+    }
+
+    .principles {
+      width: 360px;
+      border: 1px solid rgba(255,255,255,0.72);
+      border-radius: 22px;
+      padding: 16px;
+      background: rgba(255,255,255,0.58);
+      backdrop-filter: blur(24px) saturate(160%);
+      -webkit-backdrop-filter: blur(24px) saturate(160%);
+      box-shadow: var(--shadow-card);
+    }
+
+    .principles strong {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 14px;
+    }
+
+    .principles span {
+      display: inline-flex;
+      margin: 6px 6px 0 0;
+      padding: 5px 9px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.72);
+      color: var(--body);
+      font-size: 12px;
+      border: 1px solid rgba(33,52,76,0.08);
+    }
+
+    .board {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(252px, 1fr));
+      gap: 22px;
+      align-items: start;
+    }
+
+    .caption {
+      margin: 0 0 10px 6px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .device {
+      width: 100%;
+      max-width: 304px;
+      margin: 0 auto;
+      aspect-ratio: 390 / 844;
+      padding: 8px;
+      border-radius: 40px;
+      background:
+        linear-gradient(145deg, rgba(255,255,255,0.65), rgba(255,255,255,0.2)) padding-box,
+        linear-gradient(145deg, rgba(255,255,255,0.86), rgba(20,34,52,0.3)) border-box;
+      border: 1px solid transparent;
+      box-shadow: 0 24px 70px rgba(20, 37, 58, 0.22);
+    }
+
+    .screen {
+      position: relative;
+      height: 100%;
+      overflow: hidden;
+      border-radius: 32px;
+      background:
+        radial-gradient(circle at 18% 0%, rgba(255,255,255,0.95), transparent 30%),
+        linear-gradient(180deg, #f8fafc 0%, #edf3f8 100%);
+    }
+
+    .screen.paper-bg {
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.8), transparent 120px),
+        linear-gradient(180deg, #faf6ee 0%, #eef4f8 100%);
+    }
+
+    .screen.flash-bg {
+      background:
+        radial-gradient(circle at 50% -10%, rgba(255,255,255,0.98), transparent 38%),
+        linear-gradient(180deg, #f1f5f8 0%, #e5edf4 100%);
+    }
+
+    .status {
+      height: 34px;
+      padding: 12px 21px 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: var(--ink);
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .status-bars {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .status-bars i {
+      display: block;
+      background: var(--ink);
+      opacity: 0.82;
+    }
+
+    .status-bars i:nth-child(1),
+    .status-bars i:nth-child(2) {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+    }
+
+    .status-bars i:nth-child(3) {
+      width: 18px;
+      height: 7px;
+      border-radius: 999px;
+    }
+
+    .content {
+      height: calc(100% - 34px);
+      padding: 0 18px 84px;
+      overflow: hidden;
+    }
+
+    .content.no-nav { padding-bottom: 18px; }
+
+    .header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 10px 0 14px;
+    }
+
+    .kicker {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.35;
+    }
+
+    .screen-title {
+      margin-top: 4px;
+      color: var(--ink);
+      font-size: 27px;
+      line-height: 1.08;
+      letter-spacing: 0;
+      font-weight: 780;
+    }
+
+    .glass-pill,
+    .glass-icon {
+      border: 1px solid rgba(255,255,255,0.74);
+      background: rgba(255,255,255,0.62);
+      backdrop-filter: blur(22px) saturate(160%);
+      -webkit-backdrop-filter: blur(22px) saturate(160%);
+      box-shadow: 0 8px 24px rgba(31, 51, 78, 0.08);
+      color: var(--navy);
+    }
+
+    .glass-pill {
+      padding: 8px 11px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .glass-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 13px;
+      display: grid;
+      place-items: center;
+      font-size: 15px;
+      font-weight: 800;
+    }
+
+    .today-meta {
+      display: flex;
+      gap: 7px;
+      flex-wrap: wrap;
+      margin: -3px 0 14px;
+    }
+
+    .meta-chip {
+      display: inline-flex;
+      align-items: center;
+      height: 28px;
+      padding: 0 10px;
+      border-radius: 999px;
+      color: var(--body);
+      background: rgba(255,255,255,0.62);
+      border: 1px solid rgba(33,52,76,0.07);
+      font-size: 11px;
+      font-weight: 650;
+    }
+
+    .meta-chip strong {
+      margin-right: 4px;
+      color: var(--navy);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .segmented {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      padding: 4px;
+      margin-bottom: 14px;
+      border-radius: 17px;
+      background: rgba(255,255,255,0.58);
+      border: 1px solid rgba(255,255,255,0.72);
+      backdrop-filter: blur(22px) saturate(160%);
+      -webkit-backdrop-filter: blur(22px) saturate(160%);
+      box-shadow: 0 10px 28px rgba(31, 51, 78, 0.08);
+    }
+
+    .segmented div {
+      height: 36px;
+      border-radius: 13px;
+      display: grid;
+      place-items: center;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .segmented .active {
+      color: #fff;
+      background: var(--navy);
+      box-shadow: 0 10px 22px rgba(24, 52, 86, 0.24);
+    }
+
+    .news-card {
+      position: relative;
+      margin-bottom: 12px;
+      padding: 16px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.9);
+      border: 1px solid rgba(33,52,76,0.08);
+      box-shadow: var(--shadow-card);
+      overflow: hidden;
+    }
+
+    .news-card::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 18px;
+      bottom: 18px;
+      width: 3px;
+      border-radius: 999px;
+      background: var(--amber);
+      opacity: 0.85;
+    }
+
+    .label-row {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
+    }
+
+    .mini-label {
+      display: inline-flex;
+      align-items: center;
+      height: 22px;
+      padding: 0 8px;
+      border-radius: 8px;
+      color: var(--navy);
+      background: var(--navy-soft);
+      font-size: 10px;
+      font-weight: 700;
+    }
+
+    .mini-label.hot {
+      color: var(--amber);
+      background: var(--amber-soft);
+    }
+
+    .news-title {
+      color: var(--ink);
+      font-size: 17px;
+      line-height: 1.38;
+      font-weight: 780;
+      text-wrap: balance;
+    }
+
+    .news-copy {
+      margin-top: 8px;
+      color: var(--body);
+      font-size: 12px;
+      line-height: 1.7;
+    }
+
+    .news-foot {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      margin-top: 12px;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .news-foot strong { color: var(--amber); font-weight: 750; }
+
+    .tabbar {
+      position: absolute;
+      left: 14px;
+      right: 14px;
+      bottom: 12px;
+      height: 64px;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      align-items: center;
+      border-radius: 24px;
+      background: rgba(255,255,255,0.7);
+      border: 1px solid rgba(255,255,255,0.78);
+      backdrop-filter: blur(26px) saturate(180%);
+      -webkit-backdrop-filter: blur(26px) saturate(180%);
+      box-shadow: 0 18px 44px rgba(31, 51, 78, 0.16);
+    }
+
+    .tab {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      color: #8b99aa;
+      font-size: 10px;
+      font-weight: 700;
+    }
+
+    .tab .tabmark {
+      width: 23px;
+      height: 23px;
+      border-radius: 9px;
+      border: 1.8px solid currentColor;
+      position: relative;
+    }
+
+    .tab.active { color: var(--navy); }
+
+    .tab.active .tabmark {
+      background: var(--navy);
+      border-color: var(--navy);
+      box-shadow: 0 8px 18px rgba(24,52,86,0.2);
+    }
+
+    .review-hero {
+      margin-bottom: 13px;
+      padding: 18px;
+      border-radius: 24px;
+      color: #fff;
+      background:
+        radial-gradient(circle at 86% 10%, rgba(255,201,112,0.34), transparent 32%),
+        linear-gradient(145deg, #1c3b60, #102740);
+      box-shadow: 0 18px 42px rgba(24, 52, 86, 0.26);
+    }
+
+    .review-hero .small {
+      color: rgba(255,255,255,0.72);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .review-number {
+      margin-top: 8px;
+      color: #fff;
+      font-size: 30px;
+      line-height: 1;
+      font-weight: 800;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .review-action {
+      margin-top: 16px;
+      height: 44px;
+      border-radius: 15px;
+      display: grid;
+      place-items: center;
+      background: #fff;
+      color: var(--navy);
+      font-size: 14px;
+      font-weight: 800;
+      box-shadow: 0 12px 24px rgba(0,0,0,0.14);
+    }
+
+    .task-card {
+      display: grid;
+      grid-template-columns: 42px 1fr auto;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 10px;
+      padding: 13px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.88);
+      border: 1px solid rgba(33,52,76,0.08);
+      box-shadow: var(--shadow-card);
+    }
+
+    .task-glyph {
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      color: var(--navy);
+      background: var(--navy-soft);
+      font-size: 15px;
+      font-weight: 800;
+    }
+
+    .task-card strong {
+      display: block;
+      color: var(--ink);
+      font-size: 14px;
+      line-height: 1.2;
+    }
+
+    .task-card span {
+      display: block;
+      margin-top: 5px;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.35;
+    }
+
+    .task-count {
+      color: var(--navy);
+      font-size: 20px;
+      font-weight: 800;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .flash-wrap {
+      height: calc(100% - 34px);
+      padding: 0 18px 18px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .flash-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 0 14px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .progress {
+      flex: 1;
+      height: 5px;
+      margin: 0 13px;
+      border-radius: 999px;
+      background: rgba(24,52,86,0.12);
+      overflow: hidden;
+    }
+
+    .progress div {
+      width: 34%;
+      height: 100%;
+      border-radius: inherit;
+      background: var(--navy);
+    }
+
+    .deck {
+      position: relative;
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 0;
+      padding-bottom: 12px;
+    }
+
+    .deck::before,
+    .deck::after {
+      content: "";
+      position: absolute;
+      width: 82%;
+      height: 62%;
+      border-radius: 22px;
+      background: rgba(255,255,255,0.5);
+      border: 1px solid rgba(255,255,255,0.68);
+      box-shadow: 0 14px 30px rgba(31,51,78,0.08);
+    }
+
+    .deck::before { transform: translateY(20px) scale(0.92); }
+    .deck::after { transform: translateY(10px) scale(0.97); }
+
+    .flash-card {
+      position: relative;
+      z-index: 2;
+      width: 92%;
+      min-height: 66%;
+      border-radius: 24px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.96), rgba(255,252,245,0.98));
+      border: 1px solid rgba(90,70,38,0.08);
+      box-shadow: 0 24px 56px rgba(31, 51, 78, 0.18);
+    }
+
+    .flash-kind {
+      display: inline-flex;
+      align-self: flex-start;
+      height: 26px;
+      align-items: center;
+      padding: 0 10px;
+      border-radius: 999px;
+      color: var(--amber);
+      background: var(--amber-soft);
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    .flash-title {
+      margin-top: 18px;
+      color: var(--ink);
+      font-size: 22px;
+      line-height: 1.48;
+      font-weight: 780;
+      text-wrap: pretty;
+    }
+
+    .blank {
+      display: inline-block;
+      min-width: 74px;
+      border-bottom: 2px solid var(--amber);
+      transform: translateY(-3px);
+    }
+
+    .flash-note {
+      margin-top: 14px;
+      border-radius: 14px;
+      padding: 12px;
+      background: #f6f0e6;
+      color: #745728;
+      font-size: 12px;
+      line-height: 1.65;
+    }
+
+    .flash-panel {
+      border-radius: 22px;
+      padding: 10px;
+      background: rgba(255,255,255,0.74);
+      border: 1px solid rgba(255,255,255,0.78);
+      backdrop-filter: blur(26px) saturate(180%);
+      -webkit-backdrop-filter: blur(26px) saturate(180%);
+      box-shadow: 0 18px 42px rgba(31,51,78,0.15);
+      position: relative;
+      z-index: 3;
+    }
+
+    .answer-button {
+      height: 40px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      margin-bottom: 8px;
+      color: #fff;
+      background: var(--navy);
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .feedbacks {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 7px;
+    }
+
+    .feedbacks div {
+      height: 35px;
+      border-radius: 13px;
+      display: grid;
+      place-items: center;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .state-red { color: var(--red); background: var(--red-soft); }
+    .state-amber { color: var(--amber); background: var(--amber-soft); }
+    .state-green { color: var(--green); background: var(--green-soft); }
+
+    .vocab-card {
+      margin-bottom: 11px;
+      padding: 15px;
+      border-radius: 20px;
+      background: rgba(255,255,255,0.9);
+      border: 1px solid rgba(33,52,76,0.08);
+      box-shadow: var(--shadow-card);
+    }
+
+    .vocab-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: flex-start;
+    }
+
+    .vocab-head strong {
+      color: var(--ink);
+      font-size: 15px;
+      line-height: 1.3;
+      font-weight: 780;
+    }
+
+    .vocab-head p {
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.4;
+    }
+
+    .vocab-status {
+      flex: 0 0 auto;
+      height: 23px;
+      display: inline-flex;
+      align-items: center;
+      padding: 0 8px;
+      border-radius: 999px;
+      color: var(--green);
+      background: var(--green-soft);
+      font-size: 10px;
+      font-weight: 800;
+    }
+
+    .word-row {
+      display: flex;
+      gap: 7px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+    }
+
+    .word {
+      padding: 6px 8px;
+      border-radius: 10px;
+      color: var(--navy);
+      background: #eef3f8;
+      border: 1px solid rgba(24,52,86,0.06);
+      font-size: 12px;
+      font-weight: 720;
+    }
+
+    .import-tiles {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .import-tile {
+      height: 54px;
+      display: grid;
+      place-items: center;
+      border-radius: 16px;
+      color: var(--navy);
+      background: rgba(255,255,255,0.78);
+      border: 1px solid rgba(33,52,76,0.08);
+      box-shadow: var(--shadow-card);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .result-bar {
+      position: sticky;
+      top: 0;
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+      padding: 10px 11px;
+      border-radius: 18px;
+      color: var(--body);
+      background: rgba(255,255,255,0.74);
+      border: 1px solid rgba(255,255,255,0.76);
+      backdrop-filter: blur(24px) saturate(160%);
+      -webkit-backdrop-filter: blur(24px) saturate(160%);
+      box-shadow: var(--shadow-card);
+      font-size: 12px;
+    }
+
+    .checkline {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--ink);
+      font-weight: 800;
+    }
+
+    .checkbox {
+      width: 19px;
+      height: 19px;
+      border-radius: 7px;
+      display: grid;
+      place-items: center;
+      color: #fff;
+      background: var(--navy);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .result-card {
+      display: grid;
+      grid-template-columns: 54px 1fr;
+      gap: 11px;
+      align-items: start;
+      padding: 11px;
+      margin-bottom: 9px;
+      border-radius: 17px;
+      background: rgba(255,255,255,0.9);
+      border: 1px solid rgba(33,52,76,0.08);
+      box-shadow: var(--shadow-card);
+    }
+
+    .thumb {
+      height: 72px;
+      border-radius: 11px;
+      background:
+        linear-gradient(180deg, #fff 0%, #f5f1e8 100%);
+      border: 1px solid rgba(33,52,76,0.1);
+      box-shadow: inset 0 -20px 0 rgba(24,52,86,0.04);
+    }
+
+    .result-card strong {
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      color: var(--ink);
+      font-size: 13px;
+      line-height: 1.45;
+      font-weight: 760;
+    }
+
+    .result-card .label-row { margin-top: 7px; margin-bottom: 0; }
+
+    .floating-actions {
+      position: absolute;
+      left: 17px;
+      right: 17px;
+      bottom: 82px;
+      z-index: 4;
+      display: grid;
+      grid-template-columns: 0.9fr 1.1fr;
+      gap: 8px;
+      padding: 9px;
+      border-radius: 21px;
+      background: rgba(255,255,255,0.76);
+      border: 1px solid rgba(255,255,255,0.78);
+      backdrop-filter: blur(26px) saturate(180%);
+      -webkit-backdrop-filter: blur(26px) saturate(180%);
+      box-shadow: 0 18px 42px rgba(31,51,78,0.16);
+    }
+
+    .floating-actions div {
+      height: 39px;
+      display: grid;
+      place-items: center;
+      border-radius: 14px;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .floating-actions .soft {
+      color: var(--navy);
+      background: var(--navy-soft);
+    }
+
+    .floating-actions .solid {
+      color: #fff;
+      background: var(--navy);
+    }
+
+    .links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 28px;
+    }
+
+    .links a {
+      color: var(--navy);
+      text-decoration: none;
+      padding: 9px 13px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.62);
+      border: 1px solid rgba(255,255,255,0.72);
+      box-shadow: var(--shadow-card);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    @media (max-width: 1320px) {
+      .board { grid-template-columns: repeat(3, minmax(252px, 1fr)); }
+    }
+
+    @media (max-width: 900px) {
+      .intro { grid-template-columns: 1fr; }
+      .principles { width: auto; }
+      .board { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <section class="intro">
+      <div>
+        <h1>岸岸通 UI 原型板 v2</h1>
+        <p>重做版本：去掉后台统计卡，减少硬边框和模板感。Apple 式轻毛玻璃只用于导航和浮层，内容区保留清晰阅读。</p>
+      </div>
+      <div class="principles">
+        <strong>本版使用的 skill 约束</strong>
+        <span>少卡片堆叠</span>
+        <span>克制毛玻璃</span>
+        <span>单一主色</span>
+        <span>阅读优先</span>
+      </div>
+    </section>
+
+    <section class="board">
+      <article>
+        <p class="caption">今日页：轻晨报，不放“今日内容”统计卡</p>
+        <div class="device">
+          <div class="screen paper-bg">
+            <div class="status"><span>9:41</span><span class="status-bars"><i></i><i></i><i></i></span></div>
+            <div class="content">
+              <div class="header">
+                <div>
+                  <div class="kicker">6月30日 · 04:00 更新</div>
+                  <div class="screen-title">今日学习</div>
+                </div>
+                <div class="glass-pill">设置</div>
+              </div>
+              <div class="today-meta">
+                <div class="meta-chip"><strong>4</strong>篇时政</div>
+                <div class="meta-chip"><strong>3</strong>组词汇</div>
+                <div class="meta-chip">公考晨读</div>
+              </div>
+              <div class="segmented"><div class="active">今日新闻</div><div>今日词汇</div></div>
+              <div class="news-card">
+                <div class="label-row"><span class="mini-label">经济政策</span><span class="mini-label hot">高频考点</span></div>
+                <div class="news-title">中央经济工作会议部署下半年重点任务</div>
+                <div class="news-copy">扩内需、稳外贸、深化供给侧结构性改革，新质生产力成为核心关键词。</div>
+                <div class="news-foot"><span><strong>考点</strong> 宏观调控 · 新质生产力</span><span>4分钟</span></div>
+              </div>
+              <div class="news-card">
+                <div class="label-row"><span class="mini-label">三农政策</span><span class="mini-label hot">热点</span></div>
+                <div class="news-title">夏粮丰收在望，粮食安全形势持续向好</div>
+                <div class="news-copy">农业科技赋能效果显著，耕地保护红线严守政策落实到位。</div>
+                <div class="news-foot"><span><strong>考点</strong> 粮食安全 · 乡村振兴</span><span>3分钟</span></div>
+              </div>
+            </div>
+            <nav class="tabbar">
+              <div class="tab active"><span class="tabmark"></span><span>今日</span></div>
+              <div class="tab"><span class="tabmark"></span><span>复盘</span></div>
+              <div class="tab"><span class="tabmark"></span><span>错题库</span></div>
+              <div class="tab"><span class="tabmark"></span><span>我的</span></div>
+            </nav>
+          </div>
+        </div>
+      </article>
+
+      <article>
+        <p class="caption">复盘首页：任务入口为主，不做报告页</p>
+        <div class="device">
+          <div class="screen">
+            <div class="status"><span>9:41</span><span class="status-bars"><i></i><i></i><i></i></span></div>
+            <div class="content">
+              <div class="header">
+                <div>
+                  <div class="kicker">连续复盘 7 天</div>
+                  <div class="screen-title">今日复盘</div>
+                </div>
+                <div class="glass-icon">···</div>
+              </div>
+              <div class="review-hero">
+                <div class="small">今日待复盘</div>
+                <div class="review-number">36 张</div>
+                <div class="small" style="margin-top:8px;">预计 18 分钟 · 已完成 14 张</div>
+                <div class="review-action">开始今日全部复盘</div>
+              </div>
+              <div class="task-card">
+                <div class="task-glyph">错</div>
+                <div><strong>错题闪卡</strong><span>到期 12 · 逾期 2 · 约 8 分钟</span></div>
+                <div class="task-count">12</div>
+              </div>
+              <div class="task-card">
+                <div class="task-glyph" style="color:var(--green);background:var(--green-soft);">词</div>
+                <div><strong>词汇闪卡</strong><span>到期 18 · 已完成 8 · 约 7 分钟</span></div>
+                <div class="task-count">18</div>
+              </div>
+              <div class="task-card">
+                <div class="task-glyph" style="color:var(--amber);background:var(--amber-soft);">政</div>
+                <div><strong>时政考点</strong><span>到期 6 · 高频考点 2 · 约 3 分钟</span></div>
+                <div class="task-count">6</div>
+              </div>
+            </div>
+            <nav class="tabbar">
+              <div class="tab"><span class="tabmark"></span><span>今日</span></div>
+              <div class="tab active"><span class="tabmark"></span><span>复盘</span></div>
+              <div class="tab"><span class="tabmark"></span><span>错题库</span></div>
+              <div class="tab"><span class="tabmark"></span><span>我的</span></div>
+            </nav>
+          </div>
+        </div>
+      </article>
+
+      <article>
+        <p class="caption">闪卡页：克制分层卡，底部毛玻璃操作区</p>
+        <div class="device">
+          <div class="screen flash-bg">
+            <div class="status"><span>9:41</span><span class="status-bars"><i></i><i></i><i></i></span></div>
+            <div class="flash-wrap">
+              <div class="flash-top"><span>3 / 20</span><div class="progress"><div></div></div><span>退出</span></div>
+              <div class="deck">
+                <div class="flash-card">
+                  <div>
+                    <span class="flash-kind">时政考点 · 进阶</span>
+                    <div class="flash-title">“藏粮于地、藏粮于技”强调把粮食安全基础放在 <span class="blank"></span> 和 <span class="blank"></span> 上。</div>
+                    <div class="flash-note">提示：从生产能力和科技赋能两个角度回忆。</div>
+                  </div>
+                  <p style="color:var(--muted);font-size:12px;line-height:1.55;">先回忆，再查看答案。</p>
+                </div>
+              </div>
+              <div class="flash-panel">
+                <div class="answer-button">查看答案</div>
+                <div class="feedbacks"><div class="state-red">未掌握</div><div class="state-amber">需巩固</div><div class="state-green">已掌握</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <article>
+        <p class="caption">今日词汇：词汇组展示 3-5 个预览词</p>
+        <div class="device">
+          <div class="screen">
+            <div class="status"><span>9:41</span><span class="status-bars"><i></i><i></i><i></i></span></div>
+            <div class="content">
+              <div class="header">
+                <div>
+                  <div class="kicker">3 组 · 28 个词</div>
+                  <div class="screen-title">今日词汇</div>
+                </div>
+                <div class="glass-pill">3组/天</div>
+              </div>
+              <div class="vocab-card">
+                <div class="vocab-head">
+                  <div><strong>中华文明传统文化</strong><p>成语 · 上册 · 5 个词</p></div>
+                  <span class="vocab-status">未开始</span>
+                </div>
+                <div class="word-row"><span class="word">源远流长</span><span class="word">连绵不绝</span><span class="word">博大精深</span><span class="word">历久弥新</span></div>
+              </div>
+              <div class="vocab-card">
+                <div class="vocab-head">
+                  <div><strong>改革创新</strong><p>成语 · 上册 · 7 个词</p></div>
+                  <span class="vocab-status" style="color:var(--amber);background:var(--amber-soft);">已打开</span>
+                </div>
+                <div class="word-row"><span class="word">推陈出新</span><span class="word">吐故纳新</span><span class="word">革故鼎新</span><span class="word">与时俱进</span></div>
+              </div>
+              <div class="vocab-card">
+                <div class="vocab-head">
+                  <div><strong>需要积累的其他词语</strong><p>实词 · 下册 · 23 个词</p></div>
+                  <span class="vocab-status">复习中</span>
+                </div>
+                <div class="word-row"><span class="word">审慎</span><span class="word">观照</span><span class="word">塑造</span><span class="word">支撑</span><span class="word">契合</span></div>
+              </div>
+            </div>
+            <nav class="tabbar">
+              <div class="tab active"><span class="tabmark"></span><span>今日</span></div>
+              <div class="tab"><span class="tabmark"></span><span>复盘</span></div>
+              <div class="tab"><span class="tabmark"></span><span>错题库</span></div>
+              <div class="tab"><span class="tabmark"></span><span>我的</span></div>
+            </nav>
+          </div>
+        </div>
+      </article>
+
+      <article>
+        <p class="caption">导入结果：手机端勾选保存，支持全选</p>
+        <div class="device">
+          <div class="screen">
+            <div class="status"><span>9:41</span><span class="status-bars"><i></i><i></i><i></i></span></div>
+            <div class="content">
+              <div class="header">
+                <div>
+                  <div class="kicker">识别出 12 道题 · 建议检查 2 道</div>
+                  <div class="screen-title">识别结果</div>
+                </div>
+                <div class="glass-pill">重识别</div>
+              </div>
+              <div class="import-tiles"><div class="import-tile">拍照</div><div class="import-tile">图片</div><div class="import-tile">PDF</div></div>
+              <div class="result-bar"><div class="checkline"><span class="checkbox">✓</span><span>全选</span></div><span>已选 8/12</span></div>
+              <div class="result-card">
+                <div class="thumb"></div>
+                <div><strong>下列哪项最能体现材料中“粮食安全”的政策导向？</strong><div class="label-row"><span class="mini-label">常识时政</span><span class="mini-label hot">需检查</span></div></div>
+              </div>
+              <div class="result-card">
+                <div class="thumb"></div>
+                <div><strong>资料分析中，增长率比较应优先判断哪一组基期量？</strong><div class="label-row"><span class="mini-label">资料分析</span><span class="mini-label">已完整</span></div></div>
+              </div>
+              <div class="result-card">
+                <div class="thumb"></div>
+                <div><strong>推进基层治理现代化的核心路径包括哪些？</strong><div class="label-row"><span class="mini-label">申论</span><span class="mini-label">已完整</span></div></div>
+              </div>
+            </div>
+            <div class="floating-actions"><div class="soft">保存所选</div><div class="solid">保存并加入复盘</div></div>
+            <nav class="tabbar">
+              <div class="tab"><span class="tabmark"></span><span>今日</span></div>
+              <div class="tab"><span class="tabmark"></span><span>复盘</span></div>
+              <div class="tab active"><span class="tabmark"></span><span>错题库</span></div>
+              <div class="tab"><span class="tabmark"></span><span>我的</span></div>
+            </nav>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <div class="links">
+      <a href="moodboard.html">返回 moodboard</a>
+      <a href="notes/style-directions.md">风格说明</a>
+      <a href="notes/component-shortlist.md">组件短名单</a>
+    </div>
+  </main>
+</body>
+</html>

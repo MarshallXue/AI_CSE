@@ -15,7 +15,7 @@ import qwenLogo from '../../assets/logos/qwen-logo.svg';
 export type PageId =
   | 'today' | 'news-detail' | 'ai-read' | 'practice' | 'export-preview'
   | 'wrongbank' | 'folder-detail' | 'ocr' | 'wrong-detail'
-  | 'review' | 'hot-practice' | 'daily-report'
+  | 'review' | 'flashcard-review' | 'hot-practice' | 'daily-report'
   | 'profile' | 'membership' | 'export-history';
 
 export type NavigateFn = (page: PageId) => void;
