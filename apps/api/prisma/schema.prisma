@@ -1,0 +1,40 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+model User {
+  id           String   @id @default(cuid())
+  wechatOpenId String   @unique
+  nickname     String?
+  avatarUrl    String?
+  memberLevel  String   @default("free")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model NewsArticle {
+  id          String    @id @default(cuid())
+  sourceId    String
+  sourceName  String
+  sourceType  String    @default("rss")
+  sourceLabel String?   @db.VarChar(512)
+  category    String
+  title       String    @db.VarChar(512)
+  link        String    @unique @db.VarChar(1024)
+  author      String?   @db.VarChar(512)
+  summary     String?   @db.Text
+  content     String?   @db.LongText
+  imageUrl    String?   @db.VarChar(1024)
+  publishedAt DateTime?
+  fetchedAt   DateTime  @default(now())
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([publishedAt])
+  @@index([category])
+  @@index([sourceType])
+}
