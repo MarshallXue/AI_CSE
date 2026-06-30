@@ -1,0 +1,475 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>岸岸通 UI Moodboard</title>
+  <style>
+    :root {
+      --bg: #f3f6f9;
+      --panel: #ffffff;
+      --ink: #16263c;
+      --muted: #6f8195;
+      --line: #dbe4ee;
+      --blue: #1e3a5f;
+      --green: #2f7a61;
+      --amber: #b97819;
+      --red: #b94a3a;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+    }
+
+    main {
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 40px 28px 72px;
+    }
+
+    header {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 28px;
+      align-items: end;
+      margin-bottom: 28px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 36px;
+      line-height: 1.12;
+      letter-spacing: 0;
+    }
+
+    h2 {
+      margin: 0 0 14px;
+      font-size: 20px;
+      line-height: 1.3;
+      letter-spacing: 0;
+    }
+
+    h3 {
+      margin: 0;
+      font-size: 15px;
+      line-height: 1.4;
+      letter-spacing: 0;
+    }
+
+    p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.7;
+      font-size: 14px;
+    }
+
+    .hero-note {
+      border-left: 3px solid var(--blue);
+      padding: 12px 0 12px 16px;
+    }
+
+    .section {
+      margin-top: 34px;
+    }
+
+    .direction-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .direction-card,
+    .reference-card,
+    .component-card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      box-shadow: 0 8px 24px rgba(20, 43, 76, 0.06);
+    }
+
+    .direction-card {
+      padding: 18px;
+      min-height: 176px;
+    }
+
+    .badge-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 14px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      padding: 4px 8px;
+      font-size: 12px;
+      background: #edf2f7;
+      color: #40566d;
+      white-space: nowrap;
+    }
+
+    .badge.blue {
+      background: #e8eef7;
+      color: var(--blue);
+    }
+
+    .badge.green {
+      background: #e7f2ed;
+      color: var(--green);
+    }
+
+    .badge.amber {
+      background: #fbf1de;
+      color: var(--amber);
+    }
+
+    .app-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .reference-card {
+      overflow: hidden;
+    }
+
+    .reference-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 14px 10px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .reference-head span {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .shot-row {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+      padding: 12px;
+      background: #f8fafc;
+    }
+
+    .shot-row img {
+      display: block;
+      width: 100%;
+      aspect-ratio: 9 / 19.5;
+      object-fit: cover;
+      object-position: top center;
+      border-radius: 8px;
+      border: 1px solid #e0e7ef;
+      background: #fff;
+    }
+
+    .reference-notes {
+      padding: 13px 14px 15px;
+    }
+
+    .component-grid {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .component-card {
+      padding: 14px;
+      min-height: 136px;
+    }
+
+    .wireframe-strip {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .wireframe {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 14px;
+      min-height: 320px;
+      box-shadow: 0 12px 30px rgba(20, 43, 76, 0.07);
+    }
+
+    .phone-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+      font-size: 12px;
+      color: #91a3b5;
+    }
+
+    .block {
+      border-radius: 8px;
+      background: #eef3f8;
+      margin-bottom: 10px;
+    }
+
+    .block.title {
+      width: 72%;
+      height: 22px;
+      background: #1e3a5f;
+    }
+
+    .block.line {
+      height: 10px;
+    }
+
+    .block.card {
+      height: 68px;
+      background: #fff;
+      border: 1px solid #dfe7f0;
+    }
+
+    .block.card.large {
+      height: 172px;
+    }
+
+    .block.button {
+      height: 42px;
+      background: #1e3a5f;
+    }
+
+    .three-buttons {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 7px;
+      margin-top: 12px;
+    }
+
+    .three-buttons div {
+      height: 34px;
+      border-radius: 8px;
+      background: #f7e9e5;
+    }
+
+    .three-buttons div:nth-child(2) {
+      background: #fbf1de;
+    }
+
+    .three-buttons div:nth-child(3) {
+      background: #e7f2ed;
+    }
+
+    .palette {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .swatch {
+      height: 44px;
+      border-radius: 8px;
+      border: 1px solid rgba(0, 0, 0, 0.06);
+    }
+
+    a {
+      color: var(--blue);
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    @media (max-width: 980px) {
+      header,
+      .direction-grid,
+      .app-grid,
+      .component-grid,
+      .wireframe-strip {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <div>
+        <h1>岸岸通 UI Moodboard</h1>
+        <p style="margin-top: 10px;">目标方向：清爽备考桌面 + 沉浸式闪卡复盘。下面这些参考用于讨论视觉风格和组件结构，不直接照搬商业素材。</p>
+      </div>
+      <div class="hero-note">
+        <p><strong style="color: var(--ink);">设计判断：</strong>首页和错题库要有秩序，新闻和词汇要有阅读感，复盘页要有沉浸感。</p>
+      </div>
+    </header>
+
+    <section class="section">
+      <h2>三套可组合风格</h2>
+      <div class="direction-grid">
+        <article class="direction-card">
+          <h3>A. 清爽公考工具风</h3>
+          <p style="margin-top: 8px;">适合今日页、错题库、复盘首页。强调可信、效率和模块秩序。</p>
+          <div class="badge-row">
+            <span class="badge blue">沉稳蓝白</span>
+            <span class="badge">任务面板</span>
+            <span class="badge">弱数据化</span>
+          </div>
+        </article>
+        <article class="direction-card">
+          <h3>B. 阅读杂志感</h3>
+          <p style="margin-top: 8px;">适合新闻详情、时政精读和词汇例句。强调纸面阅读、留白和层级。</p>
+          <div class="badge-row">
+            <span class="badge amber">轻纸感</span>
+            <span class="badge">正文舒适</span>
+            <span class="badge">关键词高亮</span>
+          </div>
+        </article>
+        <article class="direction-card">
+          <h3>C. 沉浸闪卡学习风</h3>
+          <p style="margin-top: 8px;">适合错题、词汇、时政考点复盘。强调单卡聚焦和少干扰反馈。</p>
+          <div class="badge-row">
+            <span class="badge green">单卡聚焦</span>
+            <span class="badge">轻翻卡</span>
+            <span class="badge">三档反馈</span>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>官方 App 截图参考</h2>
+      <div class="app-grid">
+        <article class="reference-card">
+          <div class="reference-head"><h3>粉笔</h3><span>工具感 / 公考模块</span></div>
+          <div class="shot-row">
+            <img src="screenshots/appstore/fenbi/screenshot-1.png" alt="粉笔截图 1" />
+            <img src="screenshots/appstore/fenbi/screenshot-2.png" alt="粉笔截图 2" />
+            <img src="screenshots/appstore/fenbi/screenshot-3.png" alt="粉笔截图 3" />
+          </div>
+          <div class="reference-notes"><p>看模块组织、题目解析层级、练习结果表达。不要照搬课程营销密度。</p></div>
+        </article>
+
+        <article class="reference-card">
+          <div class="reference-head"><h3>不背单词</h3><span>沉浸卡片 / 语境</span></div>
+          <div class="shot-row">
+            <img src="screenshots/appstore/bubeidanci/screenshot-1.jpg" alt="不背单词截图 1" />
+            <img src="screenshots/appstore/bubeidanci/screenshot-2.jpg" alt="不背单词截图 2" />
+            <img src="screenshots/appstore/bubeidanci/screenshot-3.jpg" alt="不背单词截图 3" />
+          </div>
+          <div class="reference-notes"><p>看大卡片、真实语境、重点高亮。不要照搬壁纸化和英语学习情绪包装。</p></div>
+        </article>
+
+        <article class="reference-card">
+          <div class="reference-head"><h3>Quizlet</h3><span>闪卡流 / 简洁反馈</span></div>
+          <div class="shot-row">
+            <img src="screenshots/appstore/quizlet/screenshot-1.jpg" alt="Quizlet 截图 1" />
+            <img src="screenshots/appstore/quizlet/screenshot-2.jpg" alt="Quizlet 截图 2" />
+            <img src="screenshots/appstore/quizlet/screenshot-3.jpg" alt="Quizlet 截图 3" />
+          </div>
+          <div class="reference-notes"><p>看单卡复习、进度表达和少干扰模式。适合复盘页参考。</p></div>
+        </article>
+
+        <article class="reference-card">
+          <div class="reference-head"><h3>AnkiMobile</h3><span>专业闪卡 / 进度</span></div>
+          <div class="shot-row">
+            <img src="screenshots/appstore/ankimobile/screenshot-1.png" alt="AnkiMobile 截图 1" />
+            <img src="screenshots/appstore/ankimobile/screenshot-2.png" alt="AnkiMobile 截图 2" />
+            <img src="screenshots/appstore/ankimobile/screenshot-3.png" alt="AnkiMobile 截图 3" />
+          </div>
+          <div class="reference-notes"><p>看复习评分逻辑和卡组管理。不要照搬复杂设置和工程化视觉。</p></div>
+        </article>
+
+        <article class="reference-card">
+          <div class="reference-head"><h3>扇贝</h3><span>每日任务 / 复习规划</span></div>
+          <div class="shot-row">
+            <img src="screenshots/appstore/shanbay/screenshot-1.png" alt="扇贝截图 1" />
+            <img src="screenshots/appstore/shanbay/screenshot-2.jpg" alt="扇贝截图 2" />
+            <img src="screenshots/appstore/shanbay/screenshot-3.png" alt="扇贝截图 3" />
+          </div>
+          <div class="reference-notes"><p>看今日任务、记忆规划、学习完成反馈。适合复盘首页参考。</p></div>
+        </article>
+
+        <article class="reference-card">
+          <div class="reference-head"><h3>墨墨背单词</h3><span>抗遗忘 / 复习节奏</span></div>
+          <div class="shot-row">
+            <img src="screenshots/appstore/momo-vocab/screenshot-1.png" alt="墨墨截图 1" />
+            <img src="screenshots/appstore/momo-vocab/screenshot-2.png" alt="墨墨截图 2" />
+            <img src="screenshots/appstore/momo-vocab/screenshot-3.png" alt="墨墨截图 3" />
+          </div>
+          <div class="reference-notes"><p>看长期记忆规划表达。不要照搬英语词库的复杂学习路径。</p></div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>岸岸通页面草图方向</h2>
+      <div class="wireframe-strip">
+        <article class="wireframe">
+          <div class="phone-top"><span>今日</span><span>04:00 更新</span></div>
+          <div class="block title"></div>
+          <div class="block line" style="width: 48%;"></div>
+          <div class="block card"></div>
+          <div class="block card"></div>
+          <div class="block card"></div>
+          <p>今日页：状态区 + 轻报纸新闻卡 + 词汇组卡。</p>
+        </article>
+        <article class="wireframe">
+          <div class="phone-top"><span>错题库</span><span>导入</span></div>
+          <div class="block title" style="width: 50%;"></div>
+          <div class="block card"></div>
+          <div class="block card"></div>
+          <div class="block card"></div>
+          <div class="block card"></div>
+          <p>错题库：模块卡 + 状态弱标签 + 横向筛选。</p>
+        </article>
+        <article class="wireframe">
+          <div class="phone-top"><span>复盘</span><span>设置</span></div>
+          <div class="block title" style="width: 64%;"></div>
+          <div class="block button"></div>
+          <div class="block card"></div>
+          <div class="block card"></div>
+          <div class="block card"></div>
+          <p>复盘首页：总开始 + 三类闪卡入口 + 预计时间。</p>
+        </article>
+        <article class="wireframe">
+          <div class="phone-top"><span>3 / 20</span><span>错题闪卡</span></div>
+          <div class="block card large"></div>
+          <div class="block button" style="background: #edf2f7;"></div>
+          <div class="three-buttons"><div></div><div></div><div></div></div>
+          <p>闪卡页：单卡聚焦，翻面后出现三档反馈。</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>建议色彩基调</h2>
+      <p>主色沉稳，状态色低饱和，重点考点用暖琥珀。避免 AI 紫蓝渐变和大面积高饱和色。</p>
+      <div class="palette">
+        <div class="swatch" style="background:#f3f6f9" title="背景"></div>
+        <div class="swatch" style="background:#ffffff" title="卡片"></div>
+        <div class="swatch" style="background:#1e3a5f" title="主色"></div>
+        <div class="swatch" style="background:#2f7a61" title="完成"></div>
+        <div class="swatch" style="background:#b97819" title="需巩固"></div>
+        <div class="swatch" style="background:#b94a3a" title="未掌握"></div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>外部参考链接</h2>
+      <p>
+        <a href="prototype.html">打开 UI 原型板</a>，
+        <a href="notes/source-links.md">查看完整来源链接清单</a>，
+        <a href="notes/component-shortlist.md">查看组件短名单</a>，
+        <a href="notes/style-directions.md">查看风格方向说明</a>。
+      </p>
+    </section>
+  </main>
+</body>
+</html>

@@ -303,112 +303,92 @@ function TagPill({ label, tone = "blue" }: { label: string; tone?: "blue" | "gol
   );
 }
 
-function MiniVocabCard({
-  item,
-  index,
-}: {
-  item: VocabItem;
-  index: number;
-}) {
-  const transforms = [
-    "translateY(0px) scale(1)",
-    "translateY(12px) scale(0.955)",
-    "translateY(24px) scale(0.91)",
-  ];
-  const opacity = [1, 0.74, 0.48][index] ?? 0.4;
+type VocabGroupStatus = "未开始" | "已打开" | "已进入复盘";
 
-  return (
-    <div
-      className="absolute left-0 right-0 rounded-[18px] bg-white p-[16px]"
-      style={{
-        top: 0,
-        zIndex: 10 - index,
-        opacity,
-        transform: transforms[index] ?? transforms[2],
-        boxShadow:
-          index === 0
-            ? "0 14px 32px rgba(27,45,79,0.11), 0 0 0 0.833px rgba(27,45,79,0.07)"
-            : "0 10px 24px rgba(27,45,79,0.08), 0 0 0 0.833px rgba(27,45,79,0.05)",
-      }}
-    >
-      <div className="mb-[8px] flex items-start justify-between gap-[10px]">
-        <div>
-          <p className="font-['Noto_Sans_SC:Bold',sans-serif] text-[20px] font-bold leading-[25px] tracking-[-0.3px] text-[#1B2D4F]">
-            {item.word}
-          </p>
-          {item.pinyin && (
-            <p className="mt-[2px] font-['Noto_Sans_SC:Regular',sans-serif] text-[11.5px] tracking-[0.45px] text-[#7A8FA6]">
-              {item.pinyin}
-            </p>
-          )}
-        </div>
-        <TagPill label={item.partOfSpeech} />
-      </div>
-      <p className="line-clamp-2 font-['Noto_Sans_SC:Regular',sans-serif] text-[13px] leading-[21px] text-[#53697f]">
-        {item.definition}
-      </p>
-    </div>
-  );
-}
-
-function VocabStackCard({
+function VocabGroupCard({
   group,
+  status,
   onOpen,
 }: {
   group: VocabGroup;
+  status: VocabGroupStatus;
   onOpen: () => void;
 }) {
-  const progress = Math.round((group.masteredCount / group.words.length) * 100);
+  const previewWords = group.words.slice(0, 5);
+  const statusTone = {
+    未开始: {
+      color: "var(--app-muted)",
+      bg: "var(--app-paper)",
+      label: "未开始",
+    },
+    已打开: {
+      color: "var(--app-amber)",
+      bg: "var(--app-amber-soft)",
+      label: "已打开",
+    },
+    已进入复盘: {
+      color: "var(--app-green)",
+      bg: "var(--app-green-soft)",
+      label: "已进入复盘",
+    },
+  }[status];
 
   return (
     <button
       onClick={onOpen}
-      className="vocab-stack-pressable relative mx-4 mb-6 block w-[calc(100%-32px)] text-left"
+      className="vocab-stack-pressable mx-4 mb-3 block w-[calc(100%-32px)] rounded-[var(--app-radius-card)] bg-[var(--app-surface)] p-[15px] text-left"
+      style={{
+        border: "1px solid rgba(30,58,95,0.07)",
+        boxShadow: "var(--app-shadow-hairline)",
+      }}
       aria-label={`打开${group.title}`}
     >
-      <div className="mb-[10px] flex items-center justify-between px-[2px]">
-        <div className="flex items-center gap-[8px]">
-          <span className="flex h-[28px] w-[28px] items-center justify-center rounded-[9px] bg-[#eef3ff]">
-            <Layers3 size={15} color="#1E3A5F" strokeWidth={1.9} />
-          </span>
-          <div>
-            <p className="font-['Noto_Sans_SC:Bold',sans-serif] text-[16px] font-bold text-[#1B2D4F]">
+      <div className="flex items-start justify-between gap-[12px]">
+        <div className="min-w-0">
+          <div className="flex items-center gap-[8px]">
+            <span className="flex h-[28px] w-[28px] shrink-0 items-center justify-center rounded-[9px] bg-[var(--app-navy-soft)]">
+              <Layers3 size={15} color="var(--app-navy)" strokeWidth={1.9} />
+            </span>
+            <p className="truncate text-[16px] font-bold leading-[23px] text-[var(--app-ink)]">
               {group.title}
             </p>
-            <p className="font-['Noto_Sans_SC:Regular',sans-serif] text-[11px] text-[#8da0b4]">
-              {group.words.length} 张词卡 · {group.type}
-            </p>
           </div>
+          <p className="mt-[6px] text-[12px] leading-[18px] text-[var(--app-muted)]">
+            {group.type} · {group.words.length} 个词
+          </p>
         </div>
-        <ChevronRight size={17} color="#9BAABB" strokeWidth={2} />
+
+        <span
+          className="shrink-0 rounded-full px-[8px] py-[4px] text-[11px] font-medium leading-[15px]"
+          style={{ color: statusTone.color, backgroundColor: statusTone.bg }}
+        >
+          {statusTone.label}
+        </span>
       </div>
 
-      <div className="relative h-[150px]">
-        {group.words.slice(0, 3).map((item, index) => (
-          <MiniVocabCard key={item.id} item={item} index={index} />
+      {group.description && (
+        <p className="app-text-pretty mt-[10px] line-clamp-2 text-[12.5px] leading-[20px] text-[var(--app-body)]">
+          {group.description}
+        </p>
+      )}
+
+      <div className="mt-[13px] flex flex-wrap gap-[7px]">
+        {previewWords.map((item) => (
+          <span
+            key={item.id}
+            className="rounded-[10px] bg-[var(--app-paper)] px-[9px] py-[6px] text-[13px] font-medium leading-[18px] text-[var(--app-ink)]"
+            style={{ boxShadow: "inset 0 0 0 1px rgba(30,58,95,0.06)" }}
+          >
+            {item.word}
+          </span>
         ))}
       </div>
 
-      <div
-        className="relative mt-[8px] rounded-[14px] bg-[#f7f9fc] px-[13px] py-[11px]"
-        style={{ boxShadow: "0 0 0 0.833px rgba(27,45,79,0.04)" }}
-      >
-        <p className="mb-[6px] font-['Noto_Sans_SC:Medium',sans-serif] text-[12px] font-medium text-[#7a8fa6]">
-          辨析提醒
-        </p>
-        <p className="font-['Noto_Sans_SC:Regular',sans-serif] text-[12.5px] leading-[20px] text-[#40566d]">
+      <div className="mt-[13px] flex items-center justify-between gap-[12px] border-t border-[rgba(30,58,95,0.07)] pt-[11px]">
+        <p className="line-clamp-1 text-[12px] leading-[18px] text-[var(--app-muted)]">
           {group.examHint}
         </p>
-        <div className="mt-[10px] flex items-center justify-between">
-          <span className="font-['Noto_Sans_SC:Regular',sans-serif] text-[12px] text-[#8da0b4]">
-            已掌握 {group.masteredCount}/{group.words.length}
-          </span>
-          <div className="flex items-center gap-[7px]">
-            <div className="h-[4px] w-[66px] overflow-hidden rounded-full bg-[#e4e9f0]">
-              <div className="h-full rounded-full bg-[#1E3A5F]" style={{ width: `${progress}%` }} />
-            </div>
-          </div>
-        </div>
+        <ChevronRight size={17} color="var(--app-faint)" strokeWidth={2} />
       </div>
     </button>
   );
@@ -824,6 +804,7 @@ export function VocabTab() {
   const [selectedDateKey, setSelectedDateKey] = useState(todayKey);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [calendarOpen, setCalendarOpen] = useState(false);
+  const [openedGroupIds, setOpenedGroupIds] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     const openCalendar = () => setCalendarOpen(true);
@@ -852,6 +833,17 @@ export function VocabTab() {
     [displayGroups, selectedGroupId],
   );
 
+  const getGroupStatus = (groupId: string, index: number): VocabGroupStatus => {
+    if (openedGroupIds.has(groupId)) return "已进入复盘";
+    if (index === 1) return "已打开";
+    return "未开始";
+  };
+
+  const openGroup = (groupId: string) => {
+    setOpenedGroupIds((current) => new Set(current).add(groupId));
+    setSelectedGroupId(groupId);
+  };
+
   return (
     <div className="pt-1 pb-4">
       <div className="mx-4 mb-3 flex items-start justify-between gap-[10px]">
@@ -879,16 +871,17 @@ export function VocabTab() {
         </div>
       </div>
 
-      {displayGroups.map((group) => (
-        <VocabStackCard
+      {displayGroups.map((group, index) => (
+        <VocabGroupCard
           key={group.id}
           group={group}
-          onOpen={() => setSelectedGroupId(group.id)}
+          status={getGroupStatus(group.id, index)}
+          onOpen={() => openGroup(group.id)}
         />
       ))}
 
-      <p className="text-center mt-2" style={{ fontSize: 11, color: "#B8C5D0" }}>
-        成组辨析，减少混淆
+      <p className="mt-2 text-center text-[11px] text-[var(--app-faint)]">
+        成组辨析，默认以“需巩固”进入复盘
       </p>
 
       <AnimatePresence>

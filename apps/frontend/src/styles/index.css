@@ -13,6 +13,47 @@ body {
   text-rendering: optimizeLegibility;
 }
 
+.app-page {
+  background: var(--app-page);
+  color: var(--app-ink);
+}
+
+.app-surface {
+  background: var(--app-surface);
+  border: 1px solid var(--app-hairline);
+  box-shadow: var(--app-shadow-hairline);
+}
+
+.app-card {
+  background: var(--app-surface);
+  border: 1px solid rgba(30, 58, 95, 0.07);
+  box-shadow: var(--app-shadow-card);
+}
+
+.app-paper {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.94), rgba(248, 251, 253, 0.98)),
+    var(--app-paper);
+  border: 1px solid rgba(30, 58, 95, 0.07);
+  box-shadow: var(--app-shadow-card);
+}
+
+.app-glass {
+  background: rgba(255, 255, 255, 0.78);
+  border: 1px solid rgba(255, 255, 255, 0.68);
+  box-shadow: var(--app-shadow-floating);
+  -webkit-backdrop-filter: blur(20px) saturate(150%);
+  backdrop-filter: blur(20px) saturate(150%);
+}
+
+.app-text-balance {
+  text-wrap: balance;
+}
+
+.app-text-pretty {
+  text-wrap: pretty;
+}
+
 button,
 input,
 textarea {
@@ -30,6 +71,10 @@ button {
     border-color 180ms cubic-bezier(0.22, 1, 0.36, 1),
     box-shadow 180ms cubic-bezier(0.22, 1, 0.36, 1),
     color 180ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.app-pressable:hover {
+  filter: saturate(1.02);
 }
 
 .app-pressable:active {
@@ -107,6 +152,11 @@ button {
 
   .app-pressable:active {
     transform: none;
+  }
+
+  .app-glass {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
   }
 
   .profile-pressable {

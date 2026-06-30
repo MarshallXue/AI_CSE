@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import {
-  BarChart3,
   BookOpen,
+  CalendarDays,
   CheckCircle2,
   ChevronRight,
   ClipboardList,
@@ -9,12 +9,14 @@ import {
   LineChart,
   Newspaper,
   PencilLine,
+  Play,
   RotateCcw,
+  Settings2,
   type LucideIcon,
 } from 'lucide-react';
 import {
   IOSStatusBar, BackNav, AIInputBar, BottomNav,
-  NavigateFn, Tag,
+  NavigateFn,
 } from './shared';
 
 interface Props {
@@ -50,132 +52,144 @@ function ReviewIconTile({
 
 // ─── Page 9: Review Home ───────────────────────────────────────────────────────
 
-export function ReviewHomePage({ navigate, goBack, onTabChange }: Props) {
+export function ReviewHomePage({ navigate, onTabChange }: Props) {
+  const reviewTasks = [
+    {
+      title: '错题复盘',
+      desc: '题干、答案、错因和解析一起回看',
+      count: '12 张',
+      state: '2 逾期',
+      stateTone: 'text-[var(--app-red)] bg-[var(--app-red-soft)]',
+      time: '约 11 分钟',
+      Icon: ClipboardList,
+      color: 'var(--app-red)',
+      bg: 'var(--app-red-soft)',
+    },
+    {
+      title: '词汇复习',
+      desc: '只复习已经点开学习过的词汇组',
+      count: '16 张',
+      state: '今日到期',
+      stateTone: 'text-[var(--app-green)] bg-[var(--app-green-soft)]',
+      time: '约 8 分钟',
+      Icon: BookOpen,
+      color: 'var(--app-green)',
+      bg: 'var(--app-green-soft)',
+    },
+    {
+      title: '时政考点',
+      desc: '读过新闻后生成的关键词挖空卡',
+      count: '8 张',
+      state: '1 逾期',
+      stateTone: 'text-[var(--app-amber)] bg-[var(--app-amber-soft)]',
+      time: '约 6 分钟',
+      Icon: Newspaper,
+      color: 'var(--app-amber)',
+      bg: 'var(--app-amber-soft)',
+    },
+  ];
+
   return (
-    <div className="flex flex-col h-full bg-[#f2f4f8] overflow-hidden">
+    <div className="app-page flex h-full flex-col overflow-hidden">
       <IOSStatusBar />
 
-      {/* Title */}
-      <div className="px-[20px] pt-[4px] pb-[12px] flex-shrink-0">
-        <p className="font-['Noto_Sans_SC:Bold',sans-serif] font-bold text-[22px] text-[#1b2d4f] tracking-[-0.3px]">今日复盘</p>
-        <p className="font-['Noto_Sans_SC:Regular',sans-serif] text-[13px] text-[#9baabb] mt-[2px]">2026年6月18日 · 连续学习第 14 天</p>
-      </div>
-
-      <div className="flex-1 overflow-y-auto px-[16px] pb-[8px]">
-        {/* Stats row */}
-        <div className="grid grid-cols-4 gap-[8px] mb-[16px]">
-          {[
-            { label: '今日错题', value: '8', color: '#c84b2f', bg: '#fff3f0' },
-            { label: '待复盘', value: '5', color: '#c07a30', bg: '#fff4e8' },
-            { label: '已掌握', value: '3', color: '#2e7a3c', bg: '#eaf5ec' },
-            { label: '连续天数', value: '14', color: '#2b5fbf', bg: '#eef3ff' },
-          ].map(({ label, value, color, bg }) => (
-            <div key={label} className="bg-white rounded-[12px] p-[10px] text-center" style={{ boxShadow: '0 1px 4px rgba(0,0,0,0.05)' }}>
-              <p className="font-['Noto_Sans_SC:Bold',sans-serif] font-bold text-[22px]" style={{ color }}>{value}</p>
-              <p className="font-['Noto_Sans_SC:Regular',sans-serif] text-[11px] text-[#9baabb] mt-[2px] leading-[16px]">{label}</p>
-            </div>
-          ))}
+      <header className="flex-shrink-0 px-[20px] pb-[9px] pt-[4px]">
+        <div className="flex items-start justify-between gap-[12px]">
+          <div>
+            <p className="text-[24px] font-bold tracking-[-0.3px] text-[var(--app-ink)]">今日复盘</p>
+            <p className="mt-[2px] text-[13px] text-[var(--app-muted)]">6月30日 · 按艾宾浩斯间隔推送</p>
+          </div>
+          <button
+            type="button"
+            className="app-pressable flex h-[38px] w-[38px] items-center justify-center rounded-full bg-white text-[var(--app-navy)] shadow-[var(--app-shadow-hairline)]"
+            aria-label="复盘设置"
+          >
+            <Settings2 size={17} strokeWidth={1.9} />
+          </button>
         </div>
+      </header>
 
-        {/* Hot practice card */}
-        <div
-          className="bg-[#1e3a5f] rounded-[16px] p-[20px] mb-[14px] cursor-pointer active:opacity-90"
-          style={{ boxShadow: '0 4px 16px rgba(30,58,95,0.25)' }}
-          onClick={() => navigate('hot-practice')}
-        >
-          <div className="flex items-start justify-between">
-            <div className="flex-1">
-              <div className="flex items-center gap-[8px] mb-[8px]">
-                <div className="w-[28px] h-[28px] rounded-[8px] bg-[rgba(255,255,255,0.15)] flex items-center justify-center">
-                  <Flame size={15} color="#f6e6bd" strokeWidth={1.9} />
-                </div>
-                <p className="font-['Noto_Sans_SC:Bold',sans-serif] font-bold text-[17px] text-white">趁热打铁</p>
-              </div>
-              <p className="font-['Noto_Sans_SC:Regular',sans-serif] text-[13px] text-[rgba(255,255,255,0.75)] leading-[20px] mb-[14px]">
-                根据今天的错题和阅读内容生成强化练习
-              </p>
-              <div className="flex items-center gap-[6px] flex-wrap">
-                {['粮食安全', '基层治理', '增长率'].map(t => (
-                  <span key={t} className="bg-[rgba(255,255,255,0.15)] text-white text-[11px] font-['Noto_Sans_SC:Medium',sans-serif] px-[8px] py-[3px] rounded-[20px]">
-                    {t}
-                  </span>
-                ))}
-              </div>
-            </div>
-            <div className="flex flex-col items-end gap-[4px]">
-              <div className="bg-[rgba(255,255,255,0.2)] rounded-[10px] px-[10px] py-[6px] text-center">
-                <p className="font-['Noto_Sans_SC:Bold',sans-serif] font-bold text-[20px] text-white">5</p>
-                <p className="font-['Noto_Sans_SC:Regular',sans-serif] text-[10px] text-[rgba(255,255,255,0.7)]">推荐题</p>
-              </div>
-            </div>
-          </div>
-          <div className="flex items-center justify-between mt-[14px] pt-[12px] border-t border-[rgba(255,255,255,0.12)]">
-            <span className="font-['Noto_Sans_SC:Regular',sans-serif] text-[12px] text-[rgba(255,255,255,0.6)]">复盘记录：今日已完成 3 项</span>
-            <ChevronRight size={16} className="text-[rgba(255,255,255,0.5)]"/>
-          </div>
-        </div>
-
-        {/* Today weaknesses */}
-        <div className="bg-white rounded-[14px] p-[16px] mb-[12px]" style={{ boxShadow: '0 1px 4px rgba(0,0,0,0.06)' }}>
-          <div className="flex items-center gap-[8px] mb-[12px]">
-            <div className="w-[3px] h-[16px] bg-[#c84b2f] rounded-full"/>
-            <p className="font-['Noto_Sans_SC:Bold',sans-serif] font-bold text-[14px] text-[#1b2d4f]">今日薄弱点</p>
-          </div>
-          <div className="flex flex-wrap gap-[8px] mb-[10px]">
-            {[
-              { label: '粮食安全', bg: '#fbf4e0', color: '#8a6a10' },
-              { label: '基层治理', bg: '#eaf5ec', color: '#2e7a3c' },
-              { label: '增长率', bg: '#eef3ff', color: '#2b5fbf' },
-            ].map(({ label, bg, color }) => (
-              <span key={label} className="text-[13px] font-['Noto_Sans_SC:Medium',sans-serif] px-[10px] py-[5px] rounded-[8px]" style={{ backgroundColor: bg, color }}>
-                {label}
+      <main className="flex-1 overflow-y-auto px-[16px] pb-[10px]">
+        <section className="mb-[16px] rounded-[24px] bg-[var(--app-navy)] p-[22px] text-white shadow-[0_18px_40px_rgba(30,58,95,0.24)]">
+          <div className="flex items-center justify-between gap-[12px]">
+            <div className="flex min-w-0 items-center gap-[10px]">
+              <span className="flex h-[34px] w-[34px] flex-shrink-0 items-center justify-center rounded-[12px] bg-white/14 text-white">
+                <CalendarDays size={17} strokeWidth={1.9} />
               </span>
+              <div className="min-w-0">
+                <p className="text-[13px] font-bold leading-[18px] text-white/82">今天全部复盘</p>
+                <p className="mt-[7px] text-[34px] font-bold leading-[38px] tracking-[-0.6px]">36 张卡片</p>
+              </div>
+            </div>
+            <div className="rounded-[18px] bg-white/16 px-[14px] py-[11px] text-right">
+              <p className="text-[20px] font-bold leading-[22px]">25</p>
+              <p className="text-[11px] leading-[15px] text-white/68">分钟</p>
+            </div>
+          </div>
+
+          <p className="mt-[12px] max-w-[270px] text-[14px] leading-[23px] text-white/72">
+            错题、词汇和时政考点会按你设置的顺序进入同一场闪卡会话。
+          </p>
+
+          <div className="mt-[18px] grid grid-cols-3 gap-[8px]">
+            {[
+              ['31', '到期'],
+              ['3', '逾期'],
+              ['12%', '已完成'],
+            ].map(([value, label]) => (
+              <div key={label} className="rounded-[15px] bg-white/14 px-[12px] py-[11px]">
+                <p className="text-[17px] font-bold leading-[20px]">{value}</p>
+                <p className="mt-[3px] text-[11px] leading-[15px] text-white/64">{label}</p>
+              </div>
             ))}
           </div>
-          <p className="font-['Noto_Sans_SC:Regular',sans-serif] text-[12px] text-[#9baabb]">
-            推荐加练：5 题 · 建议今日完成
-          </p>
-        </div>
 
-        {/* Tomorrow plan */}
-        <div className="bg-white rounded-[14px] p-[16px] mb-[12px]" style={{ boxShadow: '0 1px 4px rgba(0,0,0,0.06)' }}>
-          <div className="flex items-center gap-[8px] mb-[12px]">
-            <div className="w-[3px] h-[16px] bg-[#2b5fbf] rounded-full"/>
-            <p className="font-['Noto_Sans_SC:Bold',sans-serif] font-bold text-[14px] text-[#1b2d4f]">明日计划</p>
-          </div>
-          {[
-            { label: '资料分析', time: '20 分钟', Icon: BarChart3, bg: '#eef3ff', color: '#2b5fbf' },
-            { label: '常识时政', time: '10 分钟', Icon: Newspaper, bg: '#eaf5ec', color: '#2e7a3c' },
-            { label: '错题回看', time: '15 分钟', Icon: ClipboardList, bg: '#fbf4e0', color: '#8a6a10' },
-          ].map(({ label, time, Icon, bg, color }) => (
-            <div key={label} className="flex items-center justify-between py-[8px] border-b border-[#f5f5f5] last:border-none">
-              <div className="flex items-center gap-[10px]">
-                <ReviewIconTile Icon={Icon} bg={bg} color={color} size={15} />
-                <p className="font-['Noto_Sans_SC:Regular',sans-serif] text-[14px] text-[#2c3e52]">{label}</p>
-              </div>
-              <span className="font-['Noto_Sans_SC:Regular',sans-serif] text-[13px] text-[#9baabb]">{time}</span>
-            </div>
-          ))}
-        </div>
+          <button
+            type="button"
+            onClick={() => navigate('flashcard-review')}
+            className="app-pressable mt-[18px] flex h-[52px] w-full items-center justify-center gap-[8px] rounded-[17px] bg-white text-[15px] font-bold text-[var(--app-navy)] shadow-[0_12px_26px_rgba(8,22,42,0.18)]"
+          >
+            <Play size={16} strokeWidth={2} fill="currentColor" />
+            开始今日全部复盘
+          </button>
+        </section>
 
-        {/* View daily report */}
-        <button
-          onClick={() => navigate('daily-report')}
-          className="w-full bg-white rounded-[14px] p-[16px] flex items-center justify-between active:opacity-80"
-          style={{ boxShadow: '0 1px 4px rgba(0,0,0,0.06)' }}
-        >
-          <div className="flex items-center gap-[10px]">
-            <div className="w-[36px] h-[36px] rounded-[10px] bg-[#eef3ff] flex items-center justify-center">
-              <LineChart size={18} color="#2b5fbf" strokeWidth={1.85} />
-            </div>
-            <div>
-              <p className="font-['Noto_Sans_SC:Bold',sans-serif] font-bold text-[14px] text-[#1b2d4f]">今日复盘报告</p>
-              <p className="font-['Noto_Sans_SC:Regular',sans-serif] text-[12px] text-[#9baabb]">查看今日完整学习数据</p>
-            </div>
+        <section className="mb-[10px]">
+          <div className="mb-[10px] flex items-center justify-between px-[4px]">
+            <p className="text-[16px] font-bold text-[var(--app-ink)]">分开复习</p>
+            <span className="text-[12px] text-[var(--app-muted)]">可调整顺序</span>
           </div>
-          <ChevronRight size={16} strokeWidth={2} className="text-[#c8d4e0]"/>
-        </button>
-      </div>
+
+          <div className="app-card overflow-hidden rounded-[22px] p-0">
+            {reviewTasks.map(({ title, desc, count, state, stateTone, time, Icon, color, bg }, index) => (
+              <button
+                key={title}
+                type="button"
+                onClick={() => navigate('flashcard-review')}
+                className={`app-pressable flex min-h-[78px] w-full items-center gap-[12px] px-[16px] py-[13px] text-left ${
+                  index < reviewTasks.length - 1 ? 'border-b border-[var(--app-hairline)]' : ''
+                }`}
+              >
+                <span className="flex h-[40px] w-[40px] flex-shrink-0 items-center justify-center rounded-[14px]" style={{ color, background: bg }}>
+                  <Icon size={19} strokeWidth={1.9} />
+                </span>
+                <span className="min-w-0 flex-1">
+                  <span className="flex items-center gap-[7px]">
+                    <span className="block text-[16px] font-bold leading-[21px] text-[var(--app-ink)]">{title}</span>
+                    <span className={`rounded-full px-[7px] py-[2px] text-[10.5px] font-bold leading-[14px] ${stateTone}`}>{state}</span>
+                  </span>
+                  <span className="mt-[4px] block text-[12px] leading-[17px] text-[var(--app-muted)]">{desc}</span>
+                </span>
+                <span className="flex w-[54px] flex-shrink-0 flex-col items-end text-right">
+                  <span className="text-[15px] font-bold leading-[19px] text-[var(--app-ink)]">{count}</span>
+                  <span className="mt-[2px] text-[11px] leading-[15px] text-[var(--app-muted)]">{time}</span>
+                </span>
+                <ChevronRight size={17} strokeWidth={2} className="flex-shrink-0 text-[var(--app-faint)]" />
+              </button>
+            ))}
+          </div>
+        </section>
+      </main>
 
       <AIInputBar />
       <BottomNav activeTab="review" onTabChange={onTabChange} />
