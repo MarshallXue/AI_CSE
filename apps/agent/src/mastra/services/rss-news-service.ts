@@ -40,6 +40,15 @@ function selectSources(input: { categories?: RssCategory[] }) {
     })
 }
 
+function getTime(value?: string): number {
+    if (!value) {
+        return 0
+    }
+
+    const time = new Date(value).getTime()
+    return Number.isNaN(time) ? 0 : time
+}
+
 //RSS 新闻业务服务
 // 负责：选源，抓取RSS，关键词筛选，错误收集
 export async function fetchRssNews(input: FetchRssNewsInput): Promise<FetchRssNewsResult> {
@@ -84,8 +93,12 @@ export async function fetchRssNews(input: FetchRssNewsInput): Promise<FetchRssNe
         })
         : items
 
+    const sortedItems = filteredItems.sort((a, b) => {
+        return getTime(b.pubDate) - getTime(a.pubDate)
+    })
+
     return {
-        items: filteredItems.slice(0, limit),
+        items: sortedItems.slice(0, limit),
         errors,
     }
 }
